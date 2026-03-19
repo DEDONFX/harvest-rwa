@@ -82,10 +82,7 @@ function InlineChainSelector({
             }
           >
             {c === "mantle" ? (
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                <defs><linearGradient id={`cs-mnt-${c}`} x1="6" y1="1" x2="18" y2="23" gradientUnits="userSpaceOnUse"><stop offset="0%" stopColor="#fff"/><stop offset="100%" stopColor="#00C896"/></linearGradient></defs>
-                {Array.from({length:20},(_,i)=>{const a=i*18,h=i%2===0?5.5:3.0,r=(a-90)*Math.PI/180,cx=12,cy=12,ir=4.5,w=2.2;return(<rect key={i} x={cx+Math.cos(r)*(ir+h/2)-w/2} y={cy+Math.sin(r)*(ir+h/2)-h/2} width={w} height={h} rx={0.45} fill={`url(#cs-mnt-${c})`} transform={`rotate(${a},${cx},${cy})`}/>);})}
-              </svg>
+              <img src="/mantle-logo.svg" alt="Mantle" width={12} height={12} style={{width:12,height:12}} />
             ) : (
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
                 <path d="M6.5 15.5h9l-2 2h-9l2-2z" fill="#9945FF"/>
@@ -768,10 +765,7 @@ export default function WalletPage() {
                 style={walletChain === n.id ? { background: n.bg, borderColor: n.border, color: n.color } : undefined}
               >
                 {n.id === "mantle" ? (
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                    <defs><linearGradient id="wa-mnt" x1="6" y1="1" x2="18" y2="23" gradientUnits="userSpaceOnUse"><stop offset="0%" stopColor="#fff"/><stop offset="100%" stopColor="#00C896"/></linearGradient></defs>
-                    {Array.from({length:20},(_,i)=>{const a=i*18,h=i%2===0?5.5:3.0,r=(a-90)*Math.PI/180,cx=12,cy=12,ir=4.5,w=2.2;return(<rect key={i} x={cx+Math.cos(r)*(ir+h/2)-w/2} y={cy+Math.sin(r)*(ir+h/2)-h/2} width={w} height={h} rx={0.45} fill="url(#wa-mnt)" transform={`rotate(${a},${cx},${cy})`}/>);})}
-                  </svg>
+                  <img src="/mantle-logo.svg" alt="Mantle" width={12} height={12} style={{width:12,height:12}} />
                 ) : (
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
                     <path d="M6.5 15.5h9l-2 2h-9l2-2z" fill="#9945FF"/>

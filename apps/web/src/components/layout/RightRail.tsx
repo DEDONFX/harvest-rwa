@@ -112,10 +112,7 @@ export default function RightRail() {
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg border text-[10px] font-bold"
               style={{ background: "rgba(59,158,255,0.08)", borderColor: "rgba(59,158,255,0.2)", color: "#3B9EFF" }}>
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
-                <defs><linearGradient id="rr-mnt" x1="6" y1="1" x2="18" y2="23" gradientUnits="userSpaceOnUse"><stop offset="0%" stopColor="#ffffff"/><stop offset="100%" stopColor="#00C896"/></linearGradient></defs>
-                {Array.from({length:20},(_,i)=>{const a=i*18,h=i%2===0?5.5:3.0,r=(a-90)*Math.PI/180,cx=12,cy=12,ir=4.5,w=2.2;return(<rect key={i} x={cx+Math.cos(r)*(ir+h/2)-w/2} y={cy+Math.sin(r)*(ir+h/2)-h/2} width={w} height={h} rx={0.45} fill="url(#rr-mnt)" transform={`rotate(${a},${cx},${cy})`}/>);})}
-              </svg>
+              <img src="/mantle-logo.svg" alt="Mantle" width={10} height={10} style={{width:10,height:10}} />
               Mantle
             </div>
             <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg border text-[10px] font-bold"

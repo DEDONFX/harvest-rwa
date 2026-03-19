@@ -21,12 +21,7 @@ const SUPPORTED_CHAINS = [
     status: "live" as const,
     color: "#00C896",
     assets: 5,
-    icon: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-        <defs><linearGradient id="dd-mnt" x1="6" y1="1" x2="18" y2="23" gradientUnits="userSpaceOnUse"><stop offset="0%" stopColor="#ffffff"/><stop offset="100%" stopColor="#00C896"/></linearGradient></defs>
-        {Array.from({length:20},(_,i)=>{const a=i*18,h=i%2===0?5.5:3.0,r=(a-90)*Math.PI/180,cx=12,cy=12,ir=4.5,w=2.2;return(<rect key={i} x={cx+Math.cos(r)*(ir+h/2)-w/2} y={cy+Math.sin(r)*(ir+h/2)-h/2} width={w} height={h} rx={0.45} fill="url(#dd-mnt)" transform={`rotate(${a},${cx},${cy})`}/>);})}
-      </svg>
-    ),
+    icon: <img src="/mantle-logo.svg" alt="Mantle" width={18} height={18} style={{width:18,height:18}} />,
   },
   {
     name: "Solana",
@@ -72,10 +67,7 @@ function MultichainDropdown() {
         {/* Stacked chain logos */}
         <div className="flex items-center -space-x-1">
           <div className="w-4 h-4 rounded-full bg-[rgba(0,200,150,0.15)] border border-[rgba(0,200,150,0.3)] flex items-center justify-center z-10">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
-              <defs><linearGradient id="btn-mnt" x1="6" y1="1" x2="18" y2="23" gradientUnits="userSpaceOnUse"><stop offset="0%" stopColor="#ffffff"/><stop offset="100%" stopColor="#00C896"/></linearGradient></defs>
-              {Array.from({length:20},(_,i)=>{const a=i*18,h=i%2===0?5.5:3.0,r=(a-90)*Math.PI/180,cx=12,cy=12,ir=4.5,w=2.2;return(<rect key={i} x={cx+Math.cos(r)*(ir+h/2)-w/2} y={cy+Math.sin(r)*(ir+h/2)-h/2} width={w} height={h} rx={0.45} fill="url(#btn-mnt)" transform={`rotate(${a},${cx},${cy})`}/>);})}
-            </svg>
+            <img src="/mantle-logo.svg" alt="Mantle" width={10} height={10} style={{width:10,height:10}} />
           </div>
           <div className="w-4 h-4 rounded-full bg-[rgba(153,69,255,0.15)] border border-[rgba(153,69,255,0.3)] flex items-center justify-center">
             <svg width="9" height="9" viewBox="0 0 24 24" fill="none">

@@ -39,12 +39,7 @@ const CHAINS = [
     color: "#3B9EFF",
     bg: "rgba(59,158,255,0.08)",
     border: "rgba(59,158,255,0.25)",
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-        <defs><linearGradient id="list-mnt" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#ffffff"/><stop offset="100%" stopColor="#00C896"/></linearGradient></defs>
-        {[0,16,31,47,62,78,93,109,124,140,155,171,186,202,217,233,248,264,279,295,310,326,341].map((a,i)=>{const r=(a-90)*Math.PI/180,h=i%2===0?5:3.5,cx=12,cy=12,ir=3.8;return(<rect key={i} x={cx+Math.cos(r)*(ir+h/2)-0.9} y={cy+Math.sin(r)*(ir+h/2)-h/2} width={1.8} height={h} rx={0.4} fill="url(#list-mnt)" fillOpacity={0.5+i%3*0.2} transform={`rotate(${a},${cx},${cy})`}/>)})}
-      </svg>
-    ),
+    icon: <img src="/mantle-logo.svg" alt="Mantle" width={28} height={28} style={{width:28,height:28}} />,
   },
   {
     value: "solana",

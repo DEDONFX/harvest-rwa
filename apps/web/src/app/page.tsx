@@ -363,68 +363,101 @@ export default function LaunchpadPage() {
               </div>
             </div>
 
-            {/* Chain filter — always visible, mobile + desktop */}
-            <div className="mb-4">
-              <div className="flex items-center gap-1 mb-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-green animate-pulse" />
-                <p className="text-[10px] text-muted uppercase tracking-widest font-bold">Filter by Network</p>
-              </div>
-              <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-                {CHAIN_FILTERS.map((c) => {
-                  const active = chainFilter === c.id;
-                  const count = c.id === "all" ? MOCK_ASSETS.length : MOCK_ASSETS.filter(a => a.chain === c.id).length;
-                  return (
-                    <button
-                      key={c.id}
-                      onClick={() => setChainFilter(c.id)}
-                      className={cn(
-                        "shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold border transition-all whitespace-nowrap",
-                        active ? "shadow-sm" : "bg-card border-border text-muted hover:text-offwhite hover:border-white/20"
-                      )}
-                      style={active ? { background: c.bg, borderColor: c.border, color: c.color } : undefined}
-                    >
-                      {c.logo && (
-                        <img src={c.logo} alt={c.label} width={14} height={14} style={{ width: 14, height: 14, objectFit: "contain" }} />
-                      )}
-                      {c.label}
-                      <span className={cn("text-[10px] font-mono px-1 py-0.5 rounded", active ? "opacity-70" : "text-muted2 bg-card2")}>
-                        {count}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+            {/* ── Filter panel — 4 separate rows, same on mobile & desktop ── */}
+            <div className="space-y-3 mb-6 p-4 bg-card border border-border rounded-2xl">
 
-            {/* Filter chips */}
-            <div className="flex gap-2 overflow-x-auto pb-2 mb-6 flex-wrap">
-              {FILTERS.map(({ value, label, icon: Icon }) => (
-                <button key={value} onClick={() => setFilter(value)}
-                  className={cn("shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all",
-                    filter === value ? "bg-accent/15 border-accent text-accent" : "bg-card border-border text-muted hover:text-offwhite hover:border-accent/30"
-                  )}>
-                  {Icon && <Icon size={10} />}
-                  {label}
-                </button>
-              ))}
-              <span className="border-l border-border mx-1" />
-              {RISK_CHIPS.map((r) => (
-                <button key={r} onClick={() => setRisk(r)}
-                  className={cn("shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-all",
-                    risk === r ? "bg-accent/15 border-accent text-accent" : "bg-card border-border text-muted hover:text-offwhite hover:border-accent/30"
-                  )}>
-                  {r}
-                </button>
-              ))}
-              <span className="border-l border-border mx-1" />
-              {YIELD_CHIPS.map((y) => (
-                <button key={y} onClick={() => setYield(y)}
-                  className={cn("shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-all",
-                    yieldFilter === y ? "bg-accent/15 border-accent text-accent" : "bg-card border-border text-muted hover:text-offwhite hover:border-accent/30"
-                  )}>
-                  {y}
-                </button>
-              ))}
+              {/* Row 1: Network */}
+              <div>
+                <p className="text-[10px] text-muted uppercase tracking-widest font-bold mb-2 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green animate-pulse" /> Network
+                </p>
+                <div className="flex gap-2 overflow-x-auto scrollbar-none pb-0.5">
+                  {CHAIN_FILTERS.map((c) => {
+                    const active = chainFilter === c.id;
+                    const count = c.id === "all" ? MOCK_ASSETS.length : MOCK_ASSETS.filter(a => a.chain === c.id).length;
+                    return (
+                      <button
+                        key={c.id}
+                        onClick={() => setChainFilter(c.id)}
+                        className={cn(
+                          "shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-all whitespace-nowrap",
+                          active ? "" : "bg-card2 border-border text-muted hover:text-offwhite hover:border-white/20"
+                        )}
+                        style={active ? { background: c.bg, borderColor: c.border, color: c.color } : undefined}
+                      >
+                        {c.logo && <img src={c.logo} alt={c.label} width={13} height={13} style={{ width: 13, height: 13, objectFit: "contain" }} />}
+                        {c.label}
+                        <span className="text-[9px] font-mono opacity-60">{count}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="border-t border-border" />
+
+              {/* Row 2: Asset type */}
+              <div>
+                <p className="text-[10px] text-muted uppercase tracking-widest font-bold mb-2">Asset Type</p>
+                <div className="flex gap-2 overflow-x-auto scrollbar-none pb-0.5">
+                  {FILTERS.map(({ value, label, icon: Icon }) => (
+                    <button
+                      key={value}
+                      onClick={() => setFilter(value)}
+                      className={cn(
+                        "shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all whitespace-nowrap",
+                        filter === value ? "bg-accent/15 border-accent text-accent" : "bg-card2 border-border text-muted hover:text-offwhite hover:border-accent/30"
+                      )}
+                    >
+                      {Icon && <Icon size={10} />}
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="border-t border-border" />
+
+              {/* Row 3: Risk */}
+              <div>
+                <p className="text-[10px] text-muted uppercase tracking-widest font-bold mb-2">Risk Level</p>
+                <div className="flex gap-2 overflow-x-auto scrollbar-none pb-0.5">
+                  {RISK_CHIPS.map((r) => (
+                    <button
+                      key={r}
+                      onClick={() => setRisk(r)}
+                      className={cn(
+                        "shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-all whitespace-nowrap",
+                        risk === r ? "bg-accent/15 border-accent text-accent" : "bg-card2 border-border text-muted hover:text-offwhite hover:border-accent/30"
+                      )}
+                    >
+                      {r}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="border-t border-border" />
+
+              {/* Row 4: Yield */}
+              <div>
+                <p className="text-[10px] text-muted uppercase tracking-widest font-bold mb-2">Yield Range</p>
+                <div className="flex gap-2 overflow-x-auto scrollbar-none pb-0.5">
+                  {YIELD_CHIPS.map((y) => (
+                    <button
+                      key={y}
+                      onClick={() => setYield(y)}
+                      className={cn(
+                        "shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-all whitespace-nowrap",
+                        yieldFilter === y ? "bg-accent/15 border-accent text-accent" : "bg-card2 border-border text-muted hover:text-offwhite hover:border-accent/30"
+                      )}
+                    >
+                      {y}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
             </div>
 
             {/* Count */}

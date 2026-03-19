@@ -109,22 +109,21 @@ export default function RightRail() {
               Live
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg border text-[10px] font-bold"
-              style={{ background: "rgba(59,158,255,0.08)", borderColor: "rgba(59,158,255,0.2)", color: "#3B9EFF" }}>
-              <img src="/mantle-logo.svg" alt="Mantle" width={10} height={10} style={{width:10,height:10}} />
-              Mantle
-            </div>
-            <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg border text-[10px] font-bold"
-              style={{ background: "rgba(153,69,255,0.08)", borderColor: "rgba(153,69,255,0.2)", color: "#9945FF" }}>
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
-                <path d="M6.5 15.5h9l-2 2h-9l2-2z" fill="#9945FF"/>
-                <path d="M6.5 11.5h9l-2 2h-9l2-2z" fill="#9945FF" fillOpacity="0.7"/>
-                <path d="M6.5 7.5h9l-2 2h-9l2-2z" fill="#14F195"/>
-              </svg>
-              Solana
-            </div>
-            <p className="text-[9px] text-muted ml-auto">All txns on-chain</p>
+          <div className="flex flex-wrap items-center gap-1.5">
+            {[
+              { logo: "/mantle-logo.png",     label: "Mantle",     color: "#00C896" },
+              { logo: "/solana-logo.png",     label: "Solana",     color: "#9945FF" },
+              { logo: "/eth-logo.png",        label: "Ethereum",   color: "#627EEA" },
+              { logo: "/bnb-logo.png",        label: "BNB",        color: "#F3BA2F" },
+              { logo: "/base-logo.svg",       label: "Base",       color: "#0052FF" },
+              { logo: "/assetchain-logo.png", label: "AssetChain", color: "#2B7EF7" },
+            ].map(c => (
+              <div key={c.label} className="flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-[9px] font-bold"
+                style={{ background: `${c.color}12`, borderColor: `${c.color}30`, color: c.color }}>
+                <img src={c.logo} alt={c.label} width={9} height={9} style={{ width: 9, height: 9, objectFit: "contain" }} />
+                {c.label}
+              </div>
+            ))}
           </div>
         </div>
 

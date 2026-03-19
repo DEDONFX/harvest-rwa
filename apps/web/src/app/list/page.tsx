@@ -36,10 +36,10 @@ const CHAINS = [
     name: "Mantle Network",
     tag: "EVM · ERC-1400",
     features: ["ZK Validity Rollup", "EigenDA settlement", "$3.18B Treasury", "ERC-1400 security tokens"],
-    color: "#3B9EFF",
-    bg: "rgba(59,158,255,0.08)",
-    border: "rgba(59,158,255,0.25)",
-    icon: <img src="/mantle-logo.svg" alt="Mantle" width={28} height={28} style={{width:28,height:28}} />,
+    color: "#00C896",
+    bg: "rgba(0,200,150,0.08)",
+    border: "rgba(0,200,150,0.25)",
+    logo: "/mantle-logo.png",
   },
   {
     value: "solana",
@@ -49,20 +49,57 @@ const CHAINS = [
     color: "#9945FF",
     bg: "rgba(153,69,255,0.08)",
     border: "rgba(153,69,255,0.25)",
-    icon: (
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="12" r="12" fill="rgba(153,69,255,0.15)" />
-        <path d="M6.5 15.5h9l-2 2h-9l2-2z" fill="#9945FF" />
-        <path d="M6.5 11.5h9l-2 2h-9l2-2z" fill="#9945FF" fillOpacity="0.7" />
-        <path d="M6.5 7.5h9l-2 2h-9l2-2z" fill="#14F195" />
-      </svg>
-    ),
+    logo: "/solana-logo.png",
+  },
+  {
+    value: "ethereum",
+    name: "Ethereum",
+    tag: "EVM · ERC-1400",
+    features: ["Most liquid chain", "Institutional trust", "ERC-1400 security tokens", "DeFi composability"],
+    color: "#627EEA",
+    bg: "rgba(98,126,234,0.08)",
+    border: "rgba(98,126,234,0.25)",
+    logo: "/eth-logo.png",
+  },
+  {
+    value: "bnb",
+    name: "BNB Chain",
+    tag: "EVM · BEP-20",
+    features: ["Low gas fees", "3 sec finality", "BEP-20 token standard", "Binance ecosystem"],
+    color: "#F3BA2F",
+    bg: "rgba(243,186,47,0.08)",
+    border: "rgba(243,186,47,0.25)",
+    logo: "/bnb-logo.png",
+  },
+  {
+    value: "base",
+    name: "Base",
+    tag: "EVM · L2 · Coinbase",
+    features: ["Coinbase-backed L2", "Ultra-low fees", "ERC-1400 support", "Onramp via Coinbase"],
+    color: "#0052FF",
+    bg: "rgba(0,82,255,0.08)",
+    border: "rgba(0,82,255,0.25)",
+    logo: "/base-logo.svg",
+  },
+  {
+    value: "assetchain",
+    name: "AssetChain",
+    tag: "RWA Native · XRP-EVM",
+    features: ["Built for RWAs", "XRP-EVM sidechain", "Institutional grade", "Native compliance layer"],
+    color: "#2B7EF7",
+    bg: "rgba(43,126,247,0.08)",
+    border: "rgba(43,126,247,0.25)",
+    logo: "/assetchain-logo.png",
   },
 ];
 
 const CHAIN_INFO: Record<string, string> = {
-  mantle: "Your tokens will be ERC-1400 security tokens on Mantle Network. Transfer restrictions enforced at contract level — only KYC-verified addresses can hold tokens. Gas fees absorbed by Harvest.rwa.",
-  solana: "Your tokens will be SPL tokens with Metaplex metadata on Solana. High-speed finality and access to Solana's 100M+ wallet ecosystem. Compressed NFT support for large holder counts.",
+  mantle: "ERC-1400 security tokens on Mantle Network. Transfer restrictions enforced at contract level — only KYC-verified addresses can hold tokens. Gas fees absorbed by Harvest.rwa.",
+  solana: "SPL tokens with Metaplex metadata on Solana. 400ms finality and access to Solana's 100M+ wallet ecosystem. Compressed NFT support for large holder counts.",
+  ethereum: "ERC-1400 security tokens on Ethereum Mainnet. Maximum institutional credibility and DeFi composability. Best for large-cap assets targeting institutional investors.",
+  bnb: "BEP-20 tokens on BNB Chain. Ultra-low gas fees and 3-second finality. Access to Binance's massive user base. Great for retail-focused assets.",
+  base: "ERC-1400 tokens on Base (Coinbase L2). Seamless fiat onramp via Coinbase for US investors. Near-zero fees with Ethereum-level security.",
+  assetchain: "Native RWA tokens on AssetChain — a blockchain purpose-built for real-world assets. Built-in compliance layer and XRP-EVM sidechain architecture.",
 };
 
 type Step = 0 | 1 | 2 | 3 | 4 | 5;
@@ -118,7 +155,7 @@ export default function ListAssetPage() {
           {chain && (
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-bold mb-8"
               style={{ background: chain.bg, borderColor: chain.border, color: chain.color }}>
-              {chain.icon}
+              <img src={chain.logo} alt={chain.name} width={20} height={20} style={{width:20,height:20,objectFit:"contain"}} />
               Deploying on {chain.name}
             </div>
           )}
@@ -506,7 +543,7 @@ export default function ListAssetPage() {
                     )}
 
                     {/* Logo */}
-                    <div className="mb-3">{chain.icon}</div>
+                    <div className="mb-3"><img src={chain.logo} alt={chain.name} width={32} height={32} style={{width:32,height:32,objectFit:"contain"}} /></div>
 
                     {/* Name + tag */}
                     <p className="text-sm font-bold text-white mb-0.5">{chain.name}</p>
@@ -670,7 +707,7 @@ export default function ListAssetPage() {
                       return (
                         <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[10px] font-bold"
                           style={{ background: c.bg, borderColor: c.border, color: c.color }}>
-                          {c.icon}
+                          <img src={c.logo} alt={c.name} width={12} height={12} style={{width:12,height:12,objectFit:"contain"}} />
                           {c.name}
                         </span>
                       );

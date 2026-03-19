@@ -1,65 +1,54 @@
 import Image from "next/image";
 
+export type ChainId = "mantle" | "solana" | "ethereum" | "bnb" | "base" | "assetchain";
+
 interface ChainBadgeProps {
-  chain: "mantle" | "solana";
+  chain: ChainId;
   size?: "sm" | "md";
   showLabel?: boolean;
 }
 
-export function MantleIcon({ size = 14 }: { size?: number }) {
+export const CHAIN_META: Record<ChainId, { label: string; logo: string; color: string; bg: string; border: string }> = {
+  mantle:     { label: "Mantle",     logo: "/mantle-logo.png",     color: "#00C896", bg: "rgba(0,200,150,0.1)",   border: "rgba(0,200,150,0.3)"   },
+  solana:     { label: "Solana",     logo: "/solana-logo.png",     color: "#9945FF", bg: "rgba(153,69,255,0.1)",  border: "rgba(153,69,255,0.25)" },
+  ethereum:   { label: "Ethereum",   logo: "/eth-logo.png",        color: "#627EEA", bg: "rgba(98,126,234,0.1)",  border: "rgba(98,126,234,0.25)" },
+  bnb:        { label: "BNB Chain",  logo: "/bnb-logo.png",        color: "#F3BA2F", bg: "rgba(243,186,47,0.1)",  border: "rgba(243,186,47,0.25)" },
+  base:       { label: "Base",       logo: "/base-logo.svg",       color: "#0052FF", bg: "rgba(0,82,255,0.1)",    border: "rgba(0,82,255,0.25)"   },
+  assetchain: { label: "AssetChain", logo: "/assetchain-logo.png", color: "#2B7EF7", bg: "rgba(43,126,247,0.1)",  border: "rgba(43,126,247,0.25)" },
+};
+
+export function ChainIcon({ chain, size = 14 }: { chain: ChainId; size?: number }) {
+  const meta = CHAIN_META[chain];
   return (
     <Image
-      src="/mantle-logo.svg"
-      alt="Mantle"
+      src={meta.logo}
+      alt={meta.label}
       width={size}
       height={size}
-      style={{ width: size, height: size, flexShrink: 0 }}
+      style={{ width: size, height: size, objectFit: "contain", flexShrink: 0 }}
     />
   );
 }
 
+// Keep named exports for backwards compat
+export function MantleIcon({ size = 14 }: { size?: number }) {
+  return <ChainIcon chain="mantle" size={size} />;
+}
 export function SolanaIcon({ size = 14 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
-      <circle cx="12" cy="12" r="12" fill="#9945FF" fillOpacity="0.15" />
-      <path d="M6.5 15.5h9l-2 2h-9l2-2z" fill="#9945FF" />
-      <path d="M6.5 11.5h9l-2 2h-9l2-2z" fill="#9945FF" fillOpacity="0.7" />
-      <path d="M6.5 7.5h9l-2 2h-9l2-2z" fill="#14F195" />
-    </svg>
-  );
+  return <ChainIcon chain="solana" size={size} />;
 }
 
 export default function ChainBadge({ chain, size = "sm", showLabel = true }: ChainBadgeProps) {
-  const iconSize = size === "sm" ? 14 : 16;
+  const meta = CHAIN_META[chain];
+  const iconSize = size === "sm" ? 13 : 15;
   const px = size === "sm" ? "pl-1 pr-1.5 py-0.5 text-[9px]" : "pl-1.5 pr-2 py-1 text-[10px]";
-
-  if (chain === "mantle") {
-    return (
-      <span
-        className={`inline-flex items-center gap-1 font-bold rounded-full border ${px}`}
-        style={{
-          background: "rgba(0,200,150,0.1)",
-          borderColor: "rgba(0,200,150,0.3)",
-          color: "#00C896",
-        }}
-      >
-        <MantleIcon size={iconSize} />
-        {showLabel && "Mantle"}
-      </span>
-    );
-  }
-
   return (
     <span
       className={`inline-flex items-center gap-1 font-bold rounded-full border ${px}`}
-      style={{
-        background: "rgba(153,69,255,0.1)",
-        borderColor: "rgba(153,69,255,0.25)",
-        color: "#9945FF",
-      }}
+      style={{ background: meta.bg, borderColor: meta.border, color: meta.color }}
     >
-      <SolanaIcon size={iconSize} />
-      {showLabel && "Solana"}
+      <ChainIcon chain={chain} size={iconSize} />
+      {showLabel && meta.label}
     </span>
   );
 }

@@ -28,7 +28,7 @@ const RISK_FILTERS = ["All Risk", "Low (1-4)", "Medium (5-6)", "High (7-10)"];
 const STATUS_FILTERS = ["All Status", "Live", "Upcoming", "Raise Complete"];
 const YIELD_FILTERS = ["All Yields", "0-5%", "5-10%", "10-15%", "15%+"];
 const SORT_OPTIONS = ["Most Recent", "Highest Yield", "Lowest Risk", "Most Raised"];
-const CHAIN_FILTERS = ["All Chains", "Mantle", "Solana"];
+const CHAIN_FILTERS = ["All Chains", "Mantle", "Solana", "Ethereum", "BNB", "Base", "AssetChain"];
 
 export default function DiscoverPage() {
   const [search, setSearch] = useState("");
@@ -96,6 +96,10 @@ export default function DiscoverPage() {
       assets = assets.filter((a) => {
         if (chainFilter === "Mantle") return a.chain === "mantle";
         if (chainFilter === "Solana") return a.chain === "solana";
+        if (chainFilter === "Ethereum") return a.chain === "ethereum";
+        if (chainFilter === "BNB") return a.chain === "bnb";
+        if (chainFilter === "Base") return a.chain === "base";
+        if (chainFilter === "AssetChain") return a.chain === "assetchain";
         return true;
       });
     }
@@ -196,24 +200,33 @@ export default function DiscoverPage() {
             </button>
           ))}
           <div className="border-l border-border mx-1" />
-          {CHAIN_FILTERS.map((c) => (
-            <button
-              key={c}
-              onClick={() => setChainFilter(c)}
-              className={cn(
-                "shrink-0 px-3 py-1.5 rounded-full text-xs font-bold border transition-all",
-                chainFilter === c
-                  ? c === "Mantle"
-                    ? "border-[#3B9EFF] text-[#3B9EFF] bg-[rgba(59,158,255,0.12)]"
-                    : c === "Solana"
-                    ? "border-[#9945FF] text-[#9945FF] bg-[rgba(153,69,255,0.12)]"
-                    : "bg-accent/15 border-accent text-accent"
-                  : "bg-card border-border text-muted hover:text-offwhite hover:border-accent/30"
-              )}
-            >
-              {c === "Mantle" ? "M MNT" : c === "Solana" ? "◎ SOL" : c}
-            </button>
-          ))}
+          {CHAIN_FILTERS.map((c) => {
+            const meta: Record<string, { color: string; logo?: string; label: string }> = {
+              "Mantle":     { color: "#00C896", logo: "/mantle-logo.png",     label: "Mantle"     },
+              "Solana":     { color: "#9945FF", logo: "/solana-logo.png",     label: "Solana"     },
+              "Ethereum":   { color: "#627EEA", logo: "/eth-logo.png",        label: "Ethereum"   },
+              "BNB":        { color: "#F3BA2F", logo: "/bnb-logo.png",        label: "BNB"        },
+              "Base":       { color: "#0052FF", logo: "/base-logo.svg",       label: "Base"       },
+              "AssetChain": { color: "#2B7EF7", logo: "/assetchain-logo.png", label: "AssetChain" },
+            };
+            const m = meta[c];
+            const active = chainFilter === c;
+            return (
+              <button
+                key={c}
+                onClick={() => setChainFilter(c)}
+                className={cn(
+                  "shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-all",
+                  active && m ? "" : "bg-card border-border text-muted hover:text-offwhite hover:border-accent/30",
+                  active && !m ? "bg-accent/15 border-accent text-accent" : ""
+                )}
+                style={active && m ? { background: `${m.color}18`, borderColor: `${m.color}50`, color: m.color } : {}}
+              >
+                {m?.logo && <img src={m.logo} alt={c} width={11} height={11} style={{ width: 11, height: 11, objectFit: "contain" }} />}
+                {c}
+              </button>
+            );
+          })}
         </div>
 
         {/* Grid / List view */}

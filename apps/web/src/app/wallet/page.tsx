@@ -31,39 +31,27 @@ function CountdownTimer({ minutes }: { minutes: number }) {
   );
 }
 
-const CHAIN_CONFIG = {
-  mantle: {
-    label: "Mantle",
-    placeholder: "0x...",
-    validate: (addr: string) => /^0x[0-9a-fA-F]{40}$/.test(addr.trim()),
-    errorMsg: "Must be a valid Mantle / EVM address (0x…)",
-    warning: "Transfers on Mantle are irreversible. Double-check the address before continuing.",
-    color: "#3B9EFF",
-    bg: "rgba(59,158,255,0.12)",
-    border: "rgba(59,158,255,0.35)",
-  },
-  solana: {
-    label: "Solana",
-    placeholder: "Base58 address…",
-    validate: (addr: string) => /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(addr.trim()),
-    errorMsg: "Must be a valid Solana base58 address",
-    warning: "Transfers on Solana are irreversible. Double-check the address before continuing.",
-    color: "#9945FF",
-    bg: "rgba(153,69,255,0.12)",
-    border: "rgba(153,69,255,0.35)",
-  },
-} as const;
+type ChainId = "mantle" | "solana" | "ethereum" | "bnb" | "base" | "assetchain";
 
-function InlineChainSelector({
-  value,
-  onChange,
-}: {
-  value: "mantle" | "solana";
-  onChange: (c: "mantle" | "solana") => void;
-}) {
+// EVM chains share the same address format and private key (same seed derivation path)
+const EVM_CHAINS: ChainId[] = ["mantle", "ethereum", "bnb", "base", "assetchain"];
+
+const CHAIN_CONFIG: Record<ChainId, {
+  label: string; logo: string; placeholder: string; color: string; bg: string; border: string;
+  validate: (a: string) => boolean; errorMsg: string; warning: string;
+}> = {
+  mantle:     { label: "Mantle",     logo: "/mantle-logo.png",     placeholder: "0x…",           color: "#00C896", bg: "rgba(0,200,150,0.12)",   border: "rgba(0,200,150,0.35)",   validate: (a) => /^0x[0-9a-fA-F]{40}$/.test(a.trim()), errorMsg: "Must be a valid EVM address (0x…)", warning: "Transfers on Mantle are irreversible. Double-check the address." },
+  ethereum:   { label: "Ethereum",   logo: "/eth-logo.png",        placeholder: "0x…",           color: "#627EEA", bg: "rgba(98,126,234,0.12)",  border: "rgba(98,126,234,0.35)",  validate: (a) => /^0x[0-9a-fA-F]{40}$/.test(a.trim()), errorMsg: "Must be a valid EVM address (0x…)", warning: "Transfers on Ethereum are irreversible. Double-check the address." },
+  bnb:        { label: "BNB Chain",  logo: "/bnb-logo.png",        placeholder: "0x…",           color: "#F3BA2F", bg: "rgba(243,186,47,0.12)",  border: "rgba(243,186,47,0.35)",  validate: (a) => /^0x[0-9a-fA-F]{40}$/.test(a.trim()), errorMsg: "Must be a valid EVM address (0x…)", warning: "Transfers on BNB Chain are irreversible. Double-check the address." },
+  base:       { label: "Base",       logo: "/base-logo.svg",       placeholder: "0x…",           color: "#0052FF", bg: "rgba(0,82,255,0.12)",    border: "rgba(0,82,255,0.35)",    validate: (a) => /^0x[0-9a-fA-F]{40}$/.test(a.trim()), errorMsg: "Must be a valid EVM address (0x…)", warning: "Transfers on Base are irreversible. Double-check the address." },
+  assetchain: { label: "AssetChain", logo: "/assetchain-logo.png", placeholder: "0x…",           color: "#2B7EF7", bg: "rgba(43,126,247,0.12)",  border: "rgba(43,126,247,0.35)",  validate: (a) => /^0x[0-9a-fA-F]{40}$/.test(a.trim()), errorMsg: "Must be a valid EVM address (0x…)", warning: "Transfers on AssetChain are irreversible. Double-check the address." },
+  solana:     { label: "Solana",     logo: "/solana-logo.png",     placeholder: "Base58 addr…",  color: "#9945FF", bg: "rgba(153,69,255,0.12)",  border: "rgba(153,69,255,0.35)",  validate: (a) => /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(a.trim()), errorMsg: "Must be a valid Solana base58 address", warning: "Transfers on Solana are irreversible. Solana uses a different address format — double-check." },
+};
+
+function InlineChainSelector({ value, onChange }: { value: ChainId; onChange: (c: ChainId) => void }) {
   return (
-    <div className="flex gap-2">
-      {(["mantle", "solana"] as const).map((c) => {
+    <div className="flex flex-wrap gap-1.5">
+      {(Object.keys(CHAIN_CONFIG) as ChainId[]).map((c) => {
         const cfg = CHAIN_CONFIG[c];
         const active = value === c;
         return (
@@ -72,24 +60,12 @@ function InlineChainSelector({
             type="button"
             onClick={() => onChange(c)}
             className={cn(
-              "flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all",
+              "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-semibold transition-all",
               active ? "" : "bg-card border-border text-muted hover:border-accent/30"
             )}
-            style={
-              active
-                ? { background: cfg.bg, borderColor: cfg.border, color: cfg.color }
-                : undefined
-            }
+            style={active ? { background: cfg.bg, borderColor: cfg.border, color: cfg.color } : undefined}
           >
-            {c === "mantle" ? (
-              <img src="/mantle-logo.svg" alt="Mantle" width={12} height={12} style={{width:12,height:12}} />
-            ) : (
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                <path d="M6.5 15.5h9l-2 2h-9l2-2z" fill="#9945FF"/>
-                <path d="M6.5 11.5h9l-2 2h-9l2-2z" fill="#9945FF" fillOpacity="0.7"/>
-                <path d="M6.5 7.5h9l-2 2h-9l2-2z" fill="#14F195"/>
-              </svg>
-            )}
+            <img src={cfg.logo} alt={cfg.label} width={12} height={12} style={{ width: 12, height: 12, objectFit: "contain" }} />
             {cfg.label}
           </button>
         );
@@ -100,7 +76,7 @@ function InlineChainSelector({
 
 function SendPanel({ onClose }: { onClose: () => void }) {
   const [step, setStep] = useState<1 | 2 | 3>(1);
-  const [chain, setChain] = useState<"mantle" | "solana">("mantle");
+  const [chain, setChain] = useState<ChainId>("mantle");
   const [recipient, setRecipient] = useState("");
   const [assetId, setAssetId] = useState<"usdc" | string>("usdc");
   const [tokenAmount, setTokenAmount] = useState("");
@@ -580,9 +556,9 @@ function P2PPanel({ type, onClose }: { type: PanelType; onClose: () => void }) {
 const MOCK_SOLANA_ADDRESS = "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU";
 
 function ReceivePanel({ address, onClose }: { address: string; onClose: () => void }) {
-  const [chain, setChain] = useState<"mantle" | "solana">("mantle");
+  const [chain, setChain] = useState<ChainId>("mantle");
   const [copied, setCopied] = useState(false);
-  const displayAddress = chain === "mantle" ? address : MOCK_SOLANA_ADDRESS;
+  const displayAddress = chain === "solana" ? MOCK_SOLANA_ADDRESS : address;
   const copy = () => {
     navigator.clipboard.writeText(displayAddress);
     setCopied(true);
@@ -639,15 +615,16 @@ export default function WalletPage() {
   const user = MOCK_USER;
   const [copied, setCopied] = useState(false);
   const [activePanel, setActivePanel] = useState<PanelType>(null);
-  const [walletChain, setWalletChain] = useState<"mantle" | "solana">("mantle");
+  const [walletChain, setWalletChain] = useState<ChainId>("mantle");
   const [showSeed, setShowSeed] = useState(false);
-  const [showPrivKey, setShowPrivKey] = useState(false);
+  const [showEvmKey, setShowEvmKey] = useState(false);
+  const [showSolKey, setShowSolKey] = useState(false);
   const [secCopied, setSecCopied] = useState<"seed" | "key" | "sol" | null>(null);
 
   if (blocked) return null;
 
   const copyAddress = () => {
-    const addr = walletChain === "mantle" ? user.walletAddress : MOCK_SOLANA_ADDRESS;
+    const addr = walletChain === "solana" ? MOCK_SOLANA_ADDRESS : user.walletAddress;
     navigator.clipboard.writeText(addr);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -779,11 +756,11 @@ export default function WalletPage() {
           </div>
 
           <p className="text-xs text-muted mb-2 uppercase tracking-wide">
-            Your {walletChain === "mantle" ? "Mantle (EVM)" : "Solana"} Address
+            Your {EVM_CHAINS.includes(walletChain) ? `${CHAIN_CONFIG[walletChain].label} (EVM)` : "Solana"} Address
           </p>
           <div className="flex items-center gap-2 bg-card2 rounded-xl px-4 py-3">
             <code className="flex-1 font-mono text-sm text-offwhite break-all">
-              {walletChain === "mantle" ? user.walletAddress : MOCK_SOLANA_ADDRESS}
+              {walletChain === "solana" ? MOCK_SOLANA_ADDRESS : user.walletAddress}
             </code>
             <button onClick={copyAddress} className="shrink-0 text-muted hover:text-offwhite transition-colors">
               {copied ? <Check size={14} className="text-green" /> : <Copy size={14} />}
@@ -874,28 +851,35 @@ export default function WalletPage() {
               )}
             </div>
 
-            {/* Mantle private key */}
+            {/* EVM private key — works for Mantle, Ethereum, BNB, Base, AssetChain */}
             <div className="bg-card2 rounded-xl p-4">
               <div className="flex items-center justify-between mb-1">
-                <div>
-                  <p className="text-sm font-medium text-offwhite">Mantle Private Key</p>
-                  <p className="text-xs text-muted">EVM · 256-bit hex key</p>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <p className="text-sm font-medium text-offwhite">EVM Private Key</p>
+                    <div className="flex items-center gap-1">
+                      {([["mantle","/mantle-logo.png"],["ethereum","/eth-logo.png"],["bnb","/bnb-logo.png"],["base","/base-logo.svg"],["assetchain","/assetchain-logo.png"]] as [string,string][]).map(([id,logo]) => (
+                        <img key={id} src={logo} alt={id} width={12} height={12} style={{width:12,height:12,objectFit:"contain"}} />
+                      ))}
+                    </div>
+                  </div>
+                  <p className="text-xs text-muted">Works for all 5 EVM chains · 256-bit hex key</p>
                 </div>
                 <button
-                  onClick={() => setShowPrivKey(!showPrivKey)}
+                  onClick={() => setShowEvmKey(!showEvmKey)}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-card text-xs text-muted hover:text-offwhite hover:border-accent/30 transition-all shrink-0 ml-3"
                 >
-                  {showPrivKey ? <EyeOff size={11} /> : <Eye size={11} />}
-                  {showPrivKey ? "Hide" : "Reveal"}
+                  {showEvmKey ? <EyeOff size={11} /> : <Eye size={11} />}
+                  {showEvmKey ? "Hide" : "Reveal"}
                 </button>
               </div>
 
-              {showPrivKey && (
+              {showEvmKey && (
                 <div className="mt-3 space-y-3 animate-fade-in">
                   <div className="flex items-start gap-2 bg-red/5 border border-red/20 rounded-xl px-3 py-2.5">
                     <AlertCircle size={11} className="text-red mt-0.5 shrink-0" />
                     <p className="text-[11px] text-red/90 leading-relaxed">
-                      Full control of your Mantle wallet. Never share or paste on any website.
+                      Full control of all your EVM wallets (Mantle, Ethereum, BNB, Base, AssetChain). Never share or paste on any website.
                     </p>
                   </div>
                   <div className="flex items-center gap-2 bg-card border border-border rounded-xl px-4 py-3">
@@ -911,28 +895,31 @@ export default function WalletPage() {
               )}
             </div>
 
-            {/* Solana private key — separate key from EVM */}
+            {/* Solana private key — completely different key from EVM */}
             <div className="bg-card2 rounded-xl p-4">
               <div className="flex items-center justify-between mb-1">
-                <div>
-                  <p className="text-sm font-medium text-offwhite">Solana Private Key</p>
-                  <p className="text-xs text-muted">Solana · 64-byte base58 keypair</p>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <p className="text-sm font-medium text-offwhite">Solana Private Key</p>
+                    <img src="/solana-logo.png" alt="Solana" width={12} height={12} style={{width:12,height:12,objectFit:"contain"}} />
+                  </div>
+                  <p className="text-xs text-muted">Solana only · 64-byte base58 keypair · Different from EVM key</p>
                 </div>
                 <button
-                  onClick={() => setShowPrivKey(!showPrivKey)}
+                  onClick={() => setShowSolKey(!showSolKey)}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-card text-xs text-muted hover:text-offwhite hover:border-accent/30 transition-all shrink-0 ml-3"
                 >
-                  {showPrivKey ? <EyeOff size={11} /> : <Eye size={11} />}
-                  {showPrivKey ? "Hide" : "Reveal"}
+                  {showSolKey ? <EyeOff size={11} /> : <Eye size={11} />}
+                  {showSolKey ? "Hide" : "Reveal"}
                 </button>
               </div>
 
-              {showPrivKey && (
+              {showSolKey && (
                 <div className="mt-3 space-y-3 animate-fade-in">
                   <div className="flex items-start gap-2 bg-red/5 border border-red/20 rounded-xl px-3 py-2.5">
                     <AlertCircle size={11} className="text-red mt-0.5 shrink-0" />
                     <p className="text-[11px] text-red/90 leading-relaxed">
-                      Full control of your Solana wallet. Different from your EVM key. Never share or paste on any website.
+                      Full control of your Solana wallet. This is a completely separate key from your EVM key — Solana uses Ed25519 cryptography. Never share or paste on any website.
                     </p>
                   </div>
                   <div className="flex items-center gap-2 bg-card border border-border rounded-xl px-4 py-3">

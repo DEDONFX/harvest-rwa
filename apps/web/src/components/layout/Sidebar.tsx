@@ -158,7 +158,7 @@ const MOBILE_NAV = [
   { icon: Search, href: "/discover", label: "Discover" },
   { icon: LayoutDashboard, href: "/dashboard", label: "Dashboard" },
   { icon: BarChart2, href: "/portfolio", label: "Portfolio" },
-  { icon: Bell, href: "/notifications", label: "Alerts" },
+  { icon: Activity, href: "/market", label: "Market" },
 ];
 
 export function MobileBottomNav({ isLoggedIn = true }: { isLoggedIn?: boolean }) {

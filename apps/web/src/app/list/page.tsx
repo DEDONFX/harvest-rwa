@@ -30,17 +30,57 @@ const ASSET_TYPES = [
   { value: "pre_revenue", label: "Pre-Revenue Startup", icon: Rocket, desc: "Early-stage ventures with revenue projection" },
 ];
 
-type Step = 0 | 1 | 2 | 3 | 4;
+const CHAINS = [
+  {
+    value: "mantle",
+    name: "Mantle Network",
+    tag: "EVM · ERC-1400",
+    features: ["ZK Validity Rollup", "EigenDA settlement", "$3.18B Treasury", "ERC-1400 security tokens"],
+    color: "#3B9EFF",
+    bg: "rgba(59,158,255,0.08)",
+    border: "rgba(59,158,255,0.25)",
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="12" fill="rgba(59,158,255,0.15)" />
+        <path d="M5 17V7l4.5 5.5L12 7l2.5 5.5L19 7v10" stroke="#3B9EFF" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    ),
+  },
+  {
+    value: "solana",
+    name: "Solana",
+    tag: "SPL Tokens",
+    features: ["400ms finality", "100M+ wallets", "SPL token standard", "Metaplex metadata"],
+    color: "#9945FF",
+    bg: "rgba(153,69,255,0.08)",
+    border: "rgba(153,69,255,0.25)",
+    icon: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="12" fill="rgba(153,69,255,0.15)" />
+        <path d="M6.5 15.5h9l-2 2h-9l2-2z" fill="#9945FF" />
+        <path d="M6.5 11.5h9l-2 2h-9l2-2z" fill="#9945FF" fillOpacity="0.7" />
+        <path d="M6.5 7.5h9l-2 2h-9l2-2z" fill="#14F195" />
+      </svg>
+    ),
+  },
+];
 
-const STEP_LABELS = ["Pipeline", "Asset Info", "Financials", "Documents", "Review & Pay"];
+const CHAIN_INFO: Record<string, string> = {
+  mantle: "Your tokens will be ERC-1400 security tokens on Mantle Network. Transfer restrictions enforced at contract level — only KYC-verified addresses can hold tokens. Gas fees absorbed by Harvest.rwa.",
+  solana: "Your tokens will be SPL tokens with Metaplex metadata on Solana. High-speed finality and access to Solana's 100M+ wallet ecosystem. Compressed NFT support for large holder counts.",
+};
+
+type Step = 0 | 1 | 2 | 3 | 4 | 5;
+
+const STEP_LABELS = ["Pipeline", "Asset Info", "Financials", "Chain", "Documents", "Review & Pay"];
 
 export default function ListAssetPage() {
   const [step, setStep] = useState<Step>(0);
   const [assetType, setAssetType] = useState("");
+  const [selectedChain, setSelectedChain] = useState("");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  // Form state
   const [form, setForm] = useState({
     assetName: "",
     country: "",
@@ -69,6 +109,7 @@ export default function ListAssetPage() {
 
   // ── Submitted ─────────────────────────────────────────────────────────────
   if (submitted) {
+    const chain = CHAINS.find((c) => c.value === selectedChain);
     return (
       <AppShell showRightRail={false}>
         <div className="max-w-lg mx-auto text-center py-16">
@@ -76,9 +117,16 @@ export default function ListAssetPage() {
             <CheckCircle size={36} className="text-green" />
           </div>
           <h1 className="font-syne font-black text-2xl text-white mb-2">Application Submitted</h1>
-          <p className="text-muted text-sm mb-8">
+          <p className="text-muted text-sm mb-2">
             Your $200 listing fee has been received. AI pre-screening starts within 24 hours.
           </p>
+          {chain && (
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-bold mb-8"
+              style={{ background: chain.bg, borderColor: chain.border, color: chain.color }}>
+              {chain.icon}
+              Deploying on {chain.name}
+            </div>
+          )}
 
           <div className="bg-card border border-border rounded-2xl p-5 mb-8 text-left">
             <p className="text-xs text-muted uppercase tracking-wide mb-4">Pipeline Status</p>
@@ -165,15 +213,10 @@ export default function ListAssetPage() {
                   return (
                     <div key={stage.id} className="flex items-start gap-4">
                       <div className="flex flex-col items-center shrink-0">
-                        <div className={cn(
-                          "w-9 h-9 rounded-xl border flex items-center justify-center",
-                          "bg-card2 border-border"
-                        )}>
+                        <div className={cn("w-9 h-9 rounded-xl border flex items-center justify-center", "bg-card2 border-border")}>
                           <Icon size={16} className={stage.color} />
                         </div>
-                        {i < PIPELINE_STAGES.length - 1 && (
-                          <div className="w-px h-6 bg-border mt-1" />
-                        )}
+                        {i < PIPELINE_STAGES.length - 1 && <div className="w-px h-6 bg-border mt-1" />}
                       </div>
                       <div className="flex-1 pb-2">
                         <div className="flex items-center justify-between">
@@ -228,9 +271,7 @@ export default function ListAssetPage() {
                     onClick={() => setAssetType(t.value)}
                     className={cn(
                       "text-left p-4 rounded-2xl border transition-all",
-                      assetType === t.value
-                        ? "bg-accent/10 border-accent"
-                        : "bg-card border-border hover:border-accent/40"
+                      assetType === t.value ? "bg-accent/10 border-accent" : "bg-card border-border hover:border-accent/40"
                     )}
                   >
                     <div className="flex items-center gap-2 mb-1">
@@ -334,7 +375,6 @@ export default function ListAssetPage() {
               </div>
             </div>
 
-            {/* Token symbol + auto-calculated supply */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-xs text-muted uppercase tracking-wide block mb-2">Token Symbol *</label>
@@ -438,8 +478,90 @@ export default function ListAssetPage() {
           </div>
         )}
 
-        {/* ── Step 3: Documents ─────────────────────────────────────────── */}
+        {/* ── Step 3: Chain Selection ───────────────────────────────────── */}
         {step === 3 && (
+          <div className="space-y-6">
+            <div>
+              <p className="text-sm font-medium text-offwhite mb-1">Choose your blockchain</p>
+              <p className="text-xs text-muted mb-5">
+                Your asset tokens will be deployed on the chain you select. This cannot be changed after submission.
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {CHAINS.map((chain) => (
+                  <button
+                    key={chain.value}
+                    onClick={() => setSelectedChain(chain.value)}
+                    className={cn(
+                      "text-left p-5 rounded-2xl border-2 transition-all relative overflow-hidden",
+                      selectedChain === chain.value
+                        ? "bg-card"
+                        : "bg-card border-border hover:border-white/10"
+                    )}
+                    style={selectedChain === chain.value ? {
+                      borderColor: chain.color,
+                      boxShadow: `0 0 24px ${chain.bg}`,
+                    } : {}}
+                  >
+                    {/* Selected indicator */}
+                    {selectedChain === chain.value && (
+                      <div className="absolute top-3 right-3">
+                        <CheckCircle size={16} style={{ color: chain.color }} />
+                      </div>
+                    )}
+
+                    {/* Logo */}
+                    <div className="mb-3">{chain.icon}</div>
+
+                    {/* Name + tag */}
+                    <p className="text-sm font-bold text-white mb-0.5">{chain.name}</p>
+                    <p className="text-[10px] font-mono mb-3" style={{ color: chain.color }}>{chain.tag}</p>
+
+                    {/* Features */}
+                    <div className="space-y-1.5">
+                      {chain.features.map((f) => (
+                        <div key={f} className="flex items-center gap-2 text-[11px] text-muted">
+                          <span className="w-1 h-1 rounded-full shrink-0" style={{ background: chain.color }} />
+                          {f}
+                        </div>
+                      ))}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Info box */}
+            {selectedChain && (
+              <div
+                className="rounded-2xl border p-4 flex items-start gap-3 transition-all"
+                style={{
+                  background: CHAINS.find((c) => c.value === selectedChain)?.bg,
+                  borderColor: CHAINS.find((c) => c.value === selectedChain)?.border,
+                }}
+              >
+                <Info size={14} className="mt-0.5 shrink-0" style={{ color: CHAINS.find((c) => c.value === selectedChain)?.color }} />
+                <p className="text-xs text-muted leading-relaxed">
+                  {CHAIN_INFO[selectedChain]}
+                </p>
+              </div>
+            )}
+
+            <div className="flex gap-3">
+              <Button variant="outline" size="lg" onClick={() => setStep(2)}>← Back</Button>
+              <Button
+                variant="primary" size="lg" className="flex-1"
+                disabled={!selectedChain}
+                onClick={() => setStep(4)}
+              >
+                Continue →
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* ── Step 4: Documents ─────────────────────────────────────────── */}
+        {step === 4 && (
           <div className="space-y-6">
             <div>
               <p className="text-sm font-medium text-offwhite mb-1">Originator Identity</p>
@@ -482,15 +604,10 @@ export default function ListAssetPage() {
                     onClick={() => setDocs((d) => ({ ...d, [key]: true }))}
                     className={cn(
                       "w-full text-left flex items-center gap-4 p-4 rounded-xl border transition-all",
-                      docs[key]
-                        ? "bg-green/5 border-green/30"
-                        : "bg-card border-border hover:border-accent/40"
+                      docs[key] ? "bg-green/5 border-green/30" : "bg-card border-border hover:border-accent/40"
                     )}
                   >
-                    <div className={cn(
-                      "w-9 h-9 rounded-xl flex items-center justify-center shrink-0",
-                      docs[key] ? "bg-green/15" : "bg-card2"
-                    )}>
+                    <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center shrink-0", docs[key] ? "bg-green/15" : "bg-card2")}>
                       {docs[key] ? <CheckCircle size={16} className="text-green" /> : <Upload size={16} className="text-muted" />}
                     </div>
                     <div className="flex-1">
@@ -511,11 +628,11 @@ export default function ListAssetPage() {
             </div>
 
             <div className="flex gap-3">
-              <Button variant="outline" size="lg" onClick={() => setStep(2)}>← Back</Button>
+              <Button variant="outline" size="lg" onClick={() => setStep(3)}>← Back</Button>
               <Button
                 variant="primary" size="lg" className="flex-1"
                 disabled={!form.originatorName || !form.originatorEmail}
-                onClick={() => setStep(4)}
+                onClick={() => setStep(5)}
               >
                 Continue →
               </Button>
@@ -523,8 +640,8 @@ export default function ListAssetPage() {
           </div>
         )}
 
-        {/* ── Step 4: Review & Pay ──────────────────────────────────────── */}
-        {step === 4 && (
+        {/* ── Step 5: Review & Pay ──────────────────────────────────────── */}
+        {step === 5 && (
           <div className="space-y-6">
             <div className="bg-card border border-border rounded-2xl divide-y divide-border">
               {[
@@ -541,13 +658,29 @@ export default function ListAssetPage() {
                   { label: "Annual yield", value: `${form.annualYield}%` },
                   { label: "Min investment", value: `$${form.minInvestment}` },
                 ]},
+                { section: "Chain", rows: [
+                  { label: "Blockchain", value: CHAINS.find((c) => c.value === selectedChain)?.name ?? selectedChain },
+                  { label: "Token standard", value: selectedChain === "mantle" ? "ERC-1400 (Security Token)" : "SPL Token (Metaplex)" },
+                ]},
                 { section: "Originator", rows: [
                   { label: "Name", value: form.originatorName },
                   { label: "Email", value: form.originatorEmail },
                 ]},
               ].map(({ section, rows }) => (
                 <div key={section} className="p-4">
-                  <p className="text-xs text-muted uppercase tracking-wide mb-3">{section}</p>
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="text-xs text-muted uppercase tracking-wide">{section}</p>
+                    {section === "Chain" && selectedChain && (() => {
+                      const c = CHAINS.find((ch) => ch.value === selectedChain)!;
+                      return (
+                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[10px] font-bold"
+                          style={{ background: c.bg, borderColor: c.border, color: c.color }}>
+                          {c.icon}
+                          {c.name}
+                        </span>
+                      );
+                    })()}
+                  </div>
                   <div className="space-y-2">
                     {rows.map(({ label, value }) => (
                       <div key={label} className="flex items-center justify-between">
@@ -577,7 +710,7 @@ export default function ListAssetPage() {
             </div>
 
             <div className="flex gap-3">
-              <Button variant="outline" size="lg" onClick={() => setStep(3)}>← Back</Button>
+              <Button variant="outline" size="lg" onClick={() => setStep(4)}>← Back</Button>
               <Button variant="primary" size="lg" className="flex-1" loading={loading} onClick={handleSubmit}>
                 Pay $200 & Submit
               </Button>

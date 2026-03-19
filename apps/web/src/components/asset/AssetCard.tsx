@@ -7,6 +7,7 @@ import ProgressBar from "@/components/ui/ProgressBar";
 import Badge from "@/components/ui/Badge";
 import RiskPips from "@/components/ui/RiskPips";
 import CategoryIcon from "@/components/ui/CategoryIcon";
+import ChainBadge from "@/components/ui/ChainBadge";
 import type { Asset } from "@/types";
 import { formatUSD, formatNumber, countdown } from "@/lib/utils";
 import { CATEGORY_LABELS } from "@/lib/mock-data";
@@ -62,6 +63,11 @@ export default function AssetCard({ asset, compact = false }: AssetCardProps) {
                 PRE-REV
               </span>
             )}
+          </div>
+
+          {/* Chain badge */}
+          <div className="absolute bottom-2 left-2">
+            <ChainBadge chain={asset.chain} />
           </div>
 
           {/* Category icon */}

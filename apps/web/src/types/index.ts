@@ -20,6 +20,7 @@ export interface Asset {
   id: string;
   name: string;
   symbol: string;
+  chain: "mantle" | "solana";
   category: AssetCategory;
   location: string;
   country: string;

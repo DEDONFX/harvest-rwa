@@ -82,6 +82,13 @@ export default function TopBar({ isLoggedIn = true, onGate }: TopBarProps) {
           <span className="text-gold font-mono">8</span>
           <span>Live</span>
         </div>
+        {/* Multichain pill */}
+        <div className="flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-bold"
+          style={{ background: "rgba(59,158,255,0.06)", borderColor: "rgba(59,158,255,0.2)" }}>
+          <span style={{ color: "#3B9EFF" }}>M</span>
+          <span className="text-muted2">·</span>
+          <span style={{ color: "#9945FF" }}>◎</span>
+        </div>
       </div>
 
       <div className="flex-1" />

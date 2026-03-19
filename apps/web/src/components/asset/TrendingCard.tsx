@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { MapPin } from "lucide-react";
 import ProgressBar from "@/components/ui/ProgressBar";
+import ChainBadge from "@/components/ui/ChainBadge";
 import type { Asset } from "@/types";
 import { countdown } from "@/lib/utils";
 
@@ -26,6 +27,9 @@ export default function TrendingCard({ asset, rank }: TrendingCardProps) {
             loading="lazy"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-card to-transparent opacity-70" />
+          <div className="absolute top-1.5 left-1.5">
+            <ChainBadge chain={asset.chain} />
+          </div>
           <span className="absolute bottom-1.5 right-2 text-4xl font-black font-syne text-white/10 leading-none select-none">
             {rank}
           </span>

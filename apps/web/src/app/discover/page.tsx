@@ -28,6 +28,7 @@ const RISK_FILTERS = ["All Risk", "Low (1-4)", "Medium (5-6)", "High (7-10)"];
 const STATUS_FILTERS = ["All Status", "Live", "Upcoming", "Raise Complete"];
 const YIELD_FILTERS = ["All Yields", "0-5%", "5-10%", "10-15%", "15%+"];
 const SORT_OPTIONS = ["Most Recent", "Highest Yield", "Lowest Risk", "Most Raised"];
+const CHAIN_FILTERS = ["All Chains", "Mantle", "Solana"];
 
 export default function DiscoverPage() {
   const [search, setSearch] = useState("");
@@ -35,6 +36,7 @@ export default function DiscoverPage() {
   const [riskFilter, setRiskFilter] = useState("All Risk");
   const [statusFilter, setStatusFilter] = useState("All Status");
   const [yieldFilter, setYieldFilter] = useState("All Yields");
+  const [chainFilter, setChainFilter] = useState("All Chains");
   const [sort, setSort] = useState("Most Recent");
   const [view, setView] = useState<"grid" | "list">("grid");
   const [page, setPage] = useState(1);
@@ -90,12 +92,20 @@ export default function DiscoverPage() {
       });
     }
 
+    if (chainFilter !== "All Chains") {
+      assets = assets.filter((a) => {
+        if (chainFilter === "Mantle") return a.chain === "mantle";
+        if (chainFilter === "Solana") return a.chain === "solana";
+        return true;
+      });
+    }
+
     if (sort === "Highest Yield") assets.sort((a, b) => b.annualYieldPercent - a.annualYieldPercent);
     if (sort === "Lowest Risk") assets.sort((a, b) => a.riskScore - b.riskScore);
     if (sort === "Most Raised") assets.sort((a, b) => b.raisedAmount - a.raisedAmount);
 
     return assets;
-  }, [search, category, riskFilter, statusFilter, yieldFilter, sort]);
+  }, [search, category, riskFilter, statusFilter, yieldFilter, chainFilter, sort]);
 
   const paginated = filtered.slice(0, page * PER_PAGE);
   const hasMore = paginated.length < filtered.length;
@@ -183,6 +193,25 @@ export default function DiscoverPage() {
               )}
             >
               {y}
+            </button>
+          ))}
+          <div className="border-l border-border mx-1" />
+          {CHAIN_FILTERS.map((c) => (
+            <button
+              key={c}
+              onClick={() => setChainFilter(c)}
+              className={cn(
+                "shrink-0 px-3 py-1.5 rounded-full text-xs font-bold border transition-all",
+                chainFilter === c
+                  ? c === "Mantle"
+                    ? "border-[#3B9EFF] text-[#3B9EFF] bg-[rgba(59,158,255,0.12)]"
+                    : c === "Solana"
+                    ? "border-[#9945FF] text-[#9945FF] bg-[rgba(153,69,255,0.12)]"
+                    : "bg-accent/15 border-accent text-accent"
+                  : "bg-card border-border text-muted hover:text-offwhite hover:border-accent/30"
+              )}
+            >
+              {c === "Mantle" ? "M MNT" : c === "Solana" ? "◎ SOL" : c}
             </button>
           ))}
         </div>

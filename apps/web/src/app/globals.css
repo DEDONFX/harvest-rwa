@@ -97,15 +97,27 @@ body {
 }
 .ticker-inner {
   display: inline-flex;
-  animation: ticker 80s linear infinite;
+  animation: ticker 55s linear infinite;
   will-change: transform;
 }
-.ticker-inner:hover {
+.ticker-wrap:hover .ticker-inner {
   animation-play-state: paused;
 }
 @keyframes ticker {
   0%   { transform: translateX(0); }
   100% { transform: translateX(-50%); }
+}
+
+/* Chain badge colours */
+.chain-m {
+  background: rgba(59,158,255,0.12);
+  border: 1px solid rgba(59,158,255,0.25);
+  color: #3B9EFF;
+}
+.chain-s {
+  background: rgba(153,69,255,0.12);
+  border: 1px solid rgba(153,69,255,0.25);
+  color: #9945FF;
 }
 
 /* Card hover base */

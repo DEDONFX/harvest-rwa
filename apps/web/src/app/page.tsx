@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import TickerTape from "@/components/layout/TickerTape";
 import TopBar from "@/components/layout/TopBar";
-import Sidebar from "@/components/layout/Sidebar";
+import Sidebar, { MobileBottomNav } from "@/components/layout/Sidebar";
 import RightRail from "@/components/layout/RightRail";
 import ProgressBar from "@/components/ui/ProgressBar";
 import RiskPips from "@/components/ui/RiskPips";
@@ -286,7 +286,7 @@ export default function LaunchpadPage() {
       <TopBar isLoggedIn={IS_LOGGED_IN} onGate={setGateFeature} />
       <Sidebar isLoggedIn={IS_LOGGED_IN} />
 
-      <div className="pt-[84px] md:pl-14 min-h-screen">
+      <div className="pt-[84px] md:pl-14 pb-16 md:pb-0 min-h-screen">
         <div className="flex gap-6 max-w-[1440px] mx-auto px-3 sm:px-6 py-6">
           <main className="flex-1 min-w-0">
 
@@ -528,6 +528,8 @@ export default function LaunchpadPage() {
       {gateFeature && (
         <GateModal feature={gateFeature} onClose={() => setGateFeature(null)} />
       )}
+
+      <MobileBottomNav isLoggedIn={IS_LOGGED_IN} />
     </div>
   );
 }

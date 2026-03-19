@@ -154,11 +154,11 @@ export default function Sidebar({ isLoggedIn = true }: SidebarProps) {
 }
 
 const MOBILE_NAV = [
-  { icon: Rss, href: "/feed", label: "Feed" },
+  { icon: TrendingUp, href: "/", label: "Launchpad" },
   { icon: Search, href: "/discover", label: "Discover" },
+  { icon: Rss, href: "/feed", label: "Feed" },
+  { icon: Wallet, href: "/wallet", label: "Wallet" },
   { icon: LayoutDashboard, href: "/dashboard", label: "Dashboard" },
-  { icon: BarChart2, href: "/portfolio", label: "Portfolio" },
-  { icon: Activity, href: "/market", label: "Market" },
 ];
 
 export function MobileBottomNav({ isLoggedIn = true }: { isLoggedIn?: boolean }) {
@@ -166,9 +166,9 @@ export function MobileBottomNav({ isLoggedIn = true }: { isLoggedIn?: boolean })
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-surface border-t border-border flex items-center justify-around px-1 py-2">
       {MOBILE_NAV.map(({ icon: Icon, href, label }) => {
-        const locked = !isLoggedIn && ["/dashboard", "/portfolio", "/notifications"].includes(href);
+        const locked = !isLoggedIn && ["/dashboard", "/portfolio", "/wallet", "/notifications"].includes(href);
         const resolvedHref = locked ? `/signup?next=${href}` : href;
-        const isActive = pathname === href || pathname.startsWith(href + "/");
+        const isActive = href === "/" ? pathname === "/" : (pathname === href || pathname.startsWith(href + "/"));
         return (
           <Link
             key={label}

@@ -83,8 +83,8 @@ function InlineChainSelector({
           >
             {c === "mantle" ? (
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                <defs><linearGradient id={`cs-mnt-${c}`} x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#fff"/><stop offset="100%" stopColor="#00C896"/></linearGradient></defs>
-                {[0,31,62,93,124,155,186,217,248,279,310,341].map((a,i)=>{const r=(a-90)*Math.PI/180,h=i%2===0?4:3,cx=12,cy=12,ir=3.8;return(<rect key={i} x={cx+Math.cos(r)*(ir+h/2)-0.9} y={cy+Math.sin(r)*(ir+h/2)-h/2} width={1.8} height={h} rx={0.3} fill={`url(#cs-mnt-${c})`} fillOpacity={0.7+i%2*0.2} transform={`rotate(${a},${cx},${cy})`}/>);})}
+                <defs><linearGradient id={`cs-mnt-${c}`} x1="0.5" y1="0" x2="0.5" y2="1"><stop offset="0%" stopColor="#fff" stopOpacity="0.95"/><stop offset="100%" stopColor="#00C896"/></linearGradient></defs>
+                {[0,45,90,135,180,225,270,315].map((a,i)=>{const r=(a-90)*Math.PI/180,h=4.8,w=2.4,cx=12,cy=12,ir=3.6;return(<rect key={i} x={cx+Math.cos(r)*(ir+h/2)-w/2} y={cy+Math.sin(r)*(ir+h/2)-h/2} width={w} height={h} rx={0.6} fill={`url(#cs-mnt-${c})`} transform={`rotate(${a},${cx},${cy})`}/>);})}
               </svg>
             ) : (
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
@@ -632,8 +632,10 @@ const MOCK_SEED_WORDS = [
   "galaxy", "marble", "harvest", "orange", "river", "summit",
   "velvet", "anchor", "temple", "frozen", "canvas", "bridge",
 ];
-const MOCK_PRIVKEY_MANTLE = "0x7f3d8c9b2a1e4f6d0c5b8a9e3f2d1c7b4e8a9f3d2c1b7e4f6d0c5b8a9e3f2d1c";
-const MOCK_PRIVKEY_SOLANA = "4z7hKmN9pRvXwYqBsLcTfGjUoEiAkDnVeWxZrCuMbSyOl3QmHtJ6P8dF2gN5K1j8";
+// EVM 256-bit private key (64 hex chars prefixed with 0x)
+const MOCK_PRIVKEY_MANTLE = "0x4a7f3d8c9b2a1e4f6d0c5b8a9e3f2d1c7b4e8a9f3d2c1b7e4f6d0c5b8a9e3f2d";
+// Solana 64-byte keypair encoded as base58 (~88 chars) — different key from EVM
+const MOCK_PRIVKEY_SOLANA = "5KjBzP9mNxA3TqGsHcYvWrLdFuE7kQe2nVtX8oDw4MiCRb6yJpZ1hUfgS0lKm9TzaNxB4vWrLdFu3kQeP2n";
 
 export default function WalletPage() {
   const blocked = useAuthGuard("/wallet");
@@ -643,7 +645,7 @@ export default function WalletPage() {
   const [walletChain, setWalletChain] = useState<"mantle" | "solana">("mantle");
   const [showSeed, setShowSeed] = useState(false);
   const [showPrivKey, setShowPrivKey] = useState(false);
-  const [secCopied, setSecCopied] = useState<"seed" | "key" | null>(null);
+  const [secCopied, setSecCopied] = useState<"seed" | "key" | "sol" | null>(null);
 
   if (blocked) return null;
 
@@ -767,8 +769,8 @@ export default function WalletPage() {
               >
                 {n.id === "mantle" ? (
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                    <defs><linearGradient id="wa-mnt" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#fff"/><stop offset="100%" stopColor="#00C896"/></linearGradient></defs>
-                    {[0,31,62,93,124,155,186,217,248,279,310,341].map((a,i)=>{const r=(a-90)*Math.PI/180,h=i%2===0?4:3,cx=12,cy=12,ir=3.8;return(<rect key={i} x={cx+Math.cos(r)*(ir+h/2)-0.9} y={cy+Math.sin(r)*(ir+h/2)-h/2} width={1.8} height={h} rx={0.3} fill="url(#wa-mnt)" fillOpacity={0.7+i%2*0.2} transform={`rotate(${a},${cx},${cy})`}/>);})}
+                    <defs><linearGradient id="wa-mnt" x1="0.5" y1="0" x2="0.5" y2="1"><stop offset="0%" stopColor="#fff" stopOpacity="0.95"/><stop offset="100%" stopColor="#00C896"/></linearGradient></defs>
+                    {[0,45,90,135,180,225,270,315].map((a,i)=>{const r=(a-90)*Math.PI/180,h=4.8,w=2.4,cx=12,cy=12,ir=3.6;return(<rect key={i} x={cx+Math.cos(r)*(ir+h/2)-w/2} y={cy+Math.sin(r)*(ir+h/2)-h/2} width={w} height={h} rx={0.6} fill="url(#wa-mnt)" transform={`rotate(${a},${cx},${cy})`}/>);})}
                   </svg>
                 ) : (
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
@@ -878,14 +880,12 @@ export default function WalletPage() {
               )}
             </div>
 
-            {/* Private key */}
+            {/* Mantle private key */}
             <div className="bg-card2 rounded-xl p-4">
               <div className="flex items-center justify-between mb-1">
                 <div>
-                  <p className="text-sm font-medium text-offwhite">Export Private Key</p>
-                  <p className="text-xs text-muted">
-                    {walletChain === "mantle" ? "Mantle (EVM) private key" : "Solana private key"}
-                  </p>
+                  <p className="text-sm font-medium text-offwhite">Mantle Private Key</p>
+                  <p className="text-xs text-muted">EVM · 256-bit hex key</p>
                 </div>
                 <button
                   onClick={() => setShowPrivKey(!showPrivKey)}
@@ -901,27 +901,55 @@ export default function WalletPage() {
                   <div className="flex items-start gap-2 bg-red/5 border border-red/20 rounded-xl px-3 py-2.5">
                     <AlertCircle size={11} className="text-red mt-0.5 shrink-0" />
                     <p className="text-[11px] text-red/90 leading-relaxed">
-                      Your private key gives full control of this wallet. Never share it or enter it on any site.
+                      Full control of your Mantle wallet. Never share or paste on any website.
                     </p>
                   </div>
                   <div className="flex items-center gap-2 bg-card border border-border rounded-xl px-4 py-3">
-                    <code className="flex-1 font-mono text-xs text-offwhite break-all">
-                      {walletChain === "mantle" ? MOCK_PRIVKEY_MANTLE : MOCK_PRIVKEY_SOLANA}
-                    </code>
+                    <code className="flex-1 font-mono text-xs text-offwhite break-all">{MOCK_PRIVKEY_MANTLE}</code>
                     <button
-                      onClick={() => {
-                        navigator.clipboard.writeText(walletChain === "mantle" ? MOCK_PRIVKEY_MANTLE : MOCK_PRIVKEY_SOLANA);
-                        setSecCopied("key");
-                        setTimeout(() => setSecCopied(null), 2000);
-                      }}
+                      onClick={() => { navigator.clipboard.writeText(MOCK_PRIVKEY_MANTLE); setSecCopied("key"); setTimeout(() => setSecCopied(null), 2000); }}
                       className="shrink-0 text-muted hover:text-offwhite transition-colors"
                     >
                       {secCopied === "key" ? <Check size={13} className="text-green" /> : <Copy size={13} />}
                     </button>
                   </div>
-                  <p className="text-[10px] text-muted">
-                    Showing key for {walletChain === "mantle" ? "Mantle / EVM" : "Solana"} network. Switch network above to see the other key.
-                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Solana private key — separate key from EVM */}
+            <div className="bg-card2 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-1">
+                <div>
+                  <p className="text-sm font-medium text-offwhite">Solana Private Key</p>
+                  <p className="text-xs text-muted">Solana · 64-byte base58 keypair</p>
+                </div>
+                <button
+                  onClick={() => setShowPrivKey(!showPrivKey)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-card text-xs text-muted hover:text-offwhite hover:border-accent/30 transition-all shrink-0 ml-3"
+                >
+                  {showPrivKey ? <EyeOff size={11} /> : <Eye size={11} />}
+                  {showPrivKey ? "Hide" : "Reveal"}
+                </button>
+              </div>
+
+              {showPrivKey && (
+                <div className="mt-3 space-y-3 animate-fade-in">
+                  <div className="flex items-start gap-2 bg-red/5 border border-red/20 rounded-xl px-3 py-2.5">
+                    <AlertCircle size={11} className="text-red mt-0.5 shrink-0" />
+                    <p className="text-[11px] text-red/90 leading-relaxed">
+                      Full control of your Solana wallet. Different from your EVM key. Never share or paste on any website.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 bg-card border border-border rounded-xl px-4 py-3">
+                    <code className="flex-1 font-mono text-xs text-offwhite break-all">{MOCK_PRIVKEY_SOLANA}</code>
+                    <button
+                      onClick={() => { navigator.clipboard.writeText(MOCK_PRIVKEY_SOLANA); setSecCopied("sol"); setTimeout(() => setSecCopied(null), 2000); }}
+                      className="shrink-0 text-muted hover:text-offwhite transition-colors"
+                    >
+                      {secCopied === "sol" ? <Check size={13} className="text-green" /> : <Copy size={13} />}
+                    </button>
+                  </div>
                 </div>
               )}
             </div>

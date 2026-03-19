@@ -154,7 +154,7 @@ export default function TopBar({ isLoggedIn = true, onGate }: TopBarProps) {
         </div>
       </div>
 
-      {/* Live stats */}
+      {/* Live stats — desktop only */}
       <div className="hidden lg:flex items-center gap-4 text-xs text-muted shrink-0">
         <div className="flex items-center gap-1.5">
           <span className="w-1.5 h-1.5 rounded-full bg-green animate-pulse" />
@@ -165,8 +165,10 @@ export default function TopBar({ isLoggedIn = true, onGate }: TopBarProps) {
           <span className="text-gold font-mono">20</span>
           <span>Assets</span>
         </div>
-        <MultichainDropdown />
       </div>
+
+      {/* Multichain dropdown — always visible on all screen sizes */}
+      <MultichainDropdown />
 
       <div className="flex-1" />
 

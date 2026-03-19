@@ -363,32 +363,37 @@ export default function LaunchpadPage() {
               </div>
             </div>
 
-            {/* Chain filter row — visible on ALL screen sizes */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-1 mb-3 scrollbar-none">
-              {CHAIN_FILTERS.map((c) => {
-                const active = chainFilter === c.id;
-                return (
-                  <button
-                    key={c.id}
-                    onClick={() => setChainFilter(c.id)}
-                    className={cn(
-                      "shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-all whitespace-nowrap",
-                      active ? "" : "bg-card border-border text-muted hover:text-offwhite hover:border-white/20"
-                    )}
-                    style={active ? { background: c.bg, borderColor: c.border, color: c.color } : undefined}
-                  >
-                    {c.logo && (
-                      <img src={c.logo} alt={c.label} width={12} height={12} style={{ width: 12, height: 12, objectFit: "contain" }} />
-                    )}
-                    {c.label}
-                    {active && c.id !== "all" && (
-                      <span className="ml-0.5 text-[9px] opacity-70">
-                        ({MOCK_ASSETS.filter(a => a.chain === c.id).length})
+            {/* Chain filter — always visible, mobile + desktop */}
+            <div className="mb-4">
+              <div className="flex items-center gap-1 mb-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-green animate-pulse" />
+                <p className="text-[10px] text-muted uppercase tracking-widest font-bold">Filter by Network</p>
+              </div>
+              <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+                {CHAIN_FILTERS.map((c) => {
+                  const active = chainFilter === c.id;
+                  const count = c.id === "all" ? MOCK_ASSETS.length : MOCK_ASSETS.filter(a => a.chain === c.id).length;
+                  return (
+                    <button
+                      key={c.id}
+                      onClick={() => setChainFilter(c.id)}
+                      className={cn(
+                        "shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold border transition-all whitespace-nowrap",
+                        active ? "shadow-sm" : "bg-card border-border text-muted hover:text-offwhite hover:border-white/20"
+                      )}
+                      style={active ? { background: c.bg, borderColor: c.border, color: c.color } : undefined}
+                    >
+                      {c.logo && (
+                        <img src={c.logo} alt={c.label} width={14} height={14} style={{ width: 14, height: 14, objectFit: "contain" }} />
+                      )}
+                      {c.label}
+                      <span className={cn("text-[10px] font-mono px-1 py-0.5 rounded", active ? "opacity-70" : "text-muted2 bg-card2")}>
+                        {count}
                       </span>
-                    )}
-                  </button>
-                );
-              })}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Filter chips */}

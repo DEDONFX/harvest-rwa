@@ -272,8 +272,8 @@ export default function LaunchpadPage() {
       <TopBar isLoggedIn={IS_LOGGED_IN} onGate={setGateFeature} />
       <Sidebar isLoggedIn={IS_LOGGED_IN} />
 
-      <div className="pt-[84px] pl-14 min-h-screen">
-        <div className="flex gap-6 max-w-[1440px] mx-auto px-6 py-6">
+      <div className="pt-[84px] md:pl-14 min-h-screen">
+        <div className="flex gap-6 max-w-[1440px] mx-auto px-3 sm:px-6 py-6">
           <main className="flex-1 min-w-0">
 
             {/* Hero strip */}
@@ -286,13 +286,13 @@ export default function LaunchpadPage() {
                   Real assets. Real yield. Launched like a memecoin.
                 </p>
               </div>
-              <div className="flex items-center gap-4 text-xs bg-card border border-border rounded-xl px-4 py-2.5">
+              <div className="flex items-center gap-3 text-xs bg-card border border-border rounded-xl px-3 py-2.5 overflow-x-auto shrink-0 max-w-full">
                 <StatPill value={`$${(tvl / 1_000_000).toFixed(2)}M`} label="TVL" color="text-accent2" />
-                <span className="w-px h-3 bg-border" />
+                <span className="w-px h-3 bg-border shrink-0" />
                 <StatPill value={`${liveCount}`} label="live now" color="text-green" />
-                <span className="w-px h-3 bg-border" />
+                <span className="w-px h-3 bg-border shrink-0" />
                 <StatPill value="6,143" label="holders" color="text-gold" />
-                <span className="w-px h-3 bg-border" />
+                <span className="w-px h-3 bg-border shrink-0" />
                 <StatPill value="10.2%" label="avg APY" color="text-accent2" />
               </div>
             </div>

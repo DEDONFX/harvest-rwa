@@ -36,7 +36,7 @@ export default function AppShell({
 
       <div className="pt-[84px] md:pl-14 pb-16 md:pb-0 min-h-screen flex">
         {showContextStrip && <ContextStrip />}
-        <div className={cn("flex-1 flex gap-6 min-w-0 max-w-[1440px] mx-auto px-6 py-6", className)}>
+        <div className={cn("flex-1 flex gap-6 min-w-0 max-w-[1440px] mx-auto px-3 sm:px-6 py-6", className)}>
           <main className="flex-1 min-w-0">{children}</main>
           {showRightRail && <RightRail />}
         </div>

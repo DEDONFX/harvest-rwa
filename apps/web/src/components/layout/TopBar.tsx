@@ -86,7 +86,8 @@ export default function TopBar({ isLoggedIn = true, onGate }: TopBarProps) {
         <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[10px] font-bold"
           style={{ background: "rgba(255,255,255,0.03)", borderColor: "rgba(255,255,255,0.08)" }}>
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
-            <path d="M5 17V7l4.5 5.5L12 7l2.5 5.5L19 7v10" stroke="#3B9EFF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <defs><linearGradient id="tb-mnt" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#ffffff"/><stop offset="100%" stopColor="#00C896"/></linearGradient></defs>
+            {[0,31,62,93,124,155,186,217,248,279,310,341].map((a,i)=>{const r=(a-90)*Math.PI/180,h=i%2===0?4:3,cx=12,cy=12,ir=3.8;return(<rect key={i} x={cx+Math.cos(r)*(ir+h/2)-0.9} y={cy+Math.sin(r)*(ir+h/2)-h/2} width={1.8} height={h} rx={0.3} fill="url(#tb-mnt)" fillOpacity={0.6+i%2*0.3} transform={`rotate(${a},${cx},${cy})`}/>)})}
           </svg>
           <span className="text-muted2 text-[8px]">+</span>
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none">

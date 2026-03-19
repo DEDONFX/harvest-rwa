@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, Plus, Search, Wallet, Sparkles } from "lucide-react";
+import { Bell, Plus, Search, Wallet, Sparkles, ChevronDown, Clock } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
 import Button from "@/components/ui/Button";
 import HarvestLogo from "@/components/HarvestLogo";
 import { cn } from "@/lib/utils";
@@ -12,6 +13,136 @@ const NAV_ITEMS = [
   { label: "Launchpad", href: "/" },
   { label: "Feed", href: "/feed" },
 ];
+
+const SUPPORTED_CHAINS = [
+  {
+    name: "Mantle",
+    tag: "ERC-1400 · ZK Rollup",
+    status: "live" as const,
+    color: "#00C896",
+    assets: 5,
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <defs><linearGradient id="dd-mnt" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#ffffff"/><stop offset="100%" stopColor="#00C896"/></linearGradient></defs>
+        {[0,31,62,93,124,155,186,217,248,279,310,341].map((a,i)=>{const r=(a-90)*Math.PI/180,h=i%2===0?4:3,cx=12,cy=12,ir=3.8;return(<rect key={i} x={cx+Math.cos(r)*(ir+h/2)-0.9} y={cy+Math.sin(r)*(ir+h/2)-h/2} width={1.8} height={h} rx={0.3} fill="url(#dd-mnt)" fillOpacity={0.6+i%2*0.3} transform={`rotate(${a},${cx},${cy})`}/>)})}
+      </svg>
+    ),
+  },
+  {
+    name: "Solana",
+    tag: "SPL Token · 400ms",
+    status: "live" as const,
+    color: "#9945FF",
+    assets: 3,
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <path d="M6.5 15.5h9l-2 2h-9l2-2z" fill="#9945FF"/>
+        <path d="M6.5 11.5h9l-2 2h-9l2-2z" fill="#9945FF" fillOpacity="0.7"/>
+        <path d="M6.5 7.5h9l-2 2h-9l2-2z" fill="#14F195"/>
+      </svg>
+    ),
+  },
+];
+
+const COMING_SOON_CHAINS = ["Ethereum", "Base", "Asset Chain"];
+
+function MultichainDropdown() {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className={cn(
+          "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-[11px] font-semibold transition-all",
+          open
+            ? "bg-card2 border-accent/30 text-offwhite"
+            : "bg-card border-border text-muted hover:text-offwhite hover:border-accent/20"
+        )}
+      >
+        {/* Stacked chain logos */}
+        <div className="flex items-center -space-x-1">
+          <div className="w-4 h-4 rounded-full bg-[rgba(0,200,150,0.15)] border border-[rgba(0,200,150,0.3)] flex items-center justify-center z-10">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+              <defs><linearGradient id="btn-mnt" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#ffffff"/><stop offset="100%" stopColor="#00C896"/></linearGradient></defs>
+              {[0,45,90,135,180,225,270,315].map((a,i)=>{const r=(a-90)*Math.PI/180,h=i%2===0?4:3,cx=12,cy=12,ir=3.5;return(<rect key={i} x={cx+Math.cos(r)*(ir+h/2)-1} y={cy+Math.sin(r)*(ir+h/2)-h/2} width={2} height={h} rx={0.4} fill="url(#btn-mnt)" fillOpacity={0.8} transform={`rotate(${a},${cx},${cy})`}/>)})}
+            </svg>
+          </div>
+          <div className="w-4 h-4 rounded-full bg-[rgba(153,69,255,0.15)] border border-[rgba(153,69,255,0.3)] flex items-center justify-center">
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none">
+              <path d="M7 16h8l-2 2H5l2-2z" fill="#9945FF"/>
+              <path d="M7 12h8l-2 2H5l2-2z" fill="#9945FF" fillOpacity="0.7"/>
+              <path d="M7 8h8l-2 2H5l2-2z" fill="#14F195"/>
+            </svg>
+          </div>
+        </div>
+        <span>Multichain</span>
+        <ChevronDown size={11} className={cn("transition-transform", open && "rotate-180")} />
+      </button>
+
+      {open && (
+        <div className="absolute top-full left-0 mt-2 w-[220px] bg-card border border-border rounded-xl shadow-xl overflow-hidden z-50">
+          {/* Header */}
+          <div className="px-3 py-2 border-b border-border">
+            <p className="text-[10px] text-muted uppercase tracking-widest font-bold">Supported Networks</p>
+          </div>
+
+          {/* Live chains */}
+          {SUPPORTED_CHAINS.map((chain) => (
+            <div key={chain.name} className="flex items-center gap-2.5 px-3 py-2.5 hover:bg-card2 transition-colors">
+              <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+                style={{ background: `${chain.color}18`, border: `1px solid ${chain.color}30` }}>
+                {chain.icon}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-semibold text-offwhite">{chain.name}</p>
+                <p className="text-[10px] text-muted truncate">{chain.tag}</p>
+              </div>
+              <div className="flex flex-col items-end gap-0.5 shrink-0">
+                <div className="flex items-center gap-1 text-[9px] font-bold text-green">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green animate-pulse" />
+                  Live
+                </div>
+                <p className="text-[9px] text-muted">{chain.assets} assets</p>
+              </div>
+            </div>
+          ))}
+
+          {/* Divider */}
+          <div className="border-t border-border" />
+
+          {/* Coming soon */}
+          <div className="px-3 py-2">
+            <p className="text-[9px] text-muted uppercase tracking-widest font-bold mb-2">Coming Soon</p>
+            <div className="space-y-1.5">
+              {COMING_SOON_CHAINS.map((name) => (
+                <div key={name} className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-muted2 shrink-0" />
+                  <span className="text-[11px] text-muted2">{name}</span>
+                  <Clock size={9} className="text-muted2 ml-auto" />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="border-t border-border px-3 py-2 bg-card2/50">
+            <p className="text-[10px] text-muted text-center">More chains added every quarter</p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 interface TopBarProps {
   isLoggedIn?: boolean;
@@ -82,20 +213,7 @@ export default function TopBar({ isLoggedIn = true, onGate }: TopBarProps) {
           <span className="text-gold font-mono">8</span>
           <span>Live</span>
         </div>
-        {/* Multichain pill */}
-        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[10px] font-bold"
-          style={{ background: "rgba(255,255,255,0.03)", borderColor: "rgba(255,255,255,0.08)" }}>
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
-            <defs><linearGradient id="tb-mnt" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#ffffff"/><stop offset="100%" stopColor="#00C896"/></linearGradient></defs>
-            {[0,31,62,93,124,155,186,217,248,279,310,341].map((a,i)=>{const r=(a-90)*Math.PI/180,h=i%2===0?4:3,cx=12,cy=12,ir=3.8;return(<rect key={i} x={cx+Math.cos(r)*(ir+h/2)-0.9} y={cy+Math.sin(r)*(ir+h/2)-h/2} width={1.8} height={h} rx={0.3} fill="url(#tb-mnt)" fillOpacity={0.6+i%2*0.3} transform={`rotate(${a},${cx},${cy})`}/>)})}
-          </svg>
-          <span className="text-muted2 text-[8px]">+</span>
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
-            <path d="M6.5 15.5h9l-2 2h-9l2-2z" fill="#9945FF"/>
-            <path d="M6.5 11.5h9l-2 2h-9l2-2z" fill="#9945FF" fillOpacity="0.7"/>
-            <path d="M6.5 7.5h9l-2 2h-9l2-2z" fill="#14F195"/>
-          </svg>
-        </div>
+        <MultichainDropdown />
       </div>
 
       <div className="flex-1" />

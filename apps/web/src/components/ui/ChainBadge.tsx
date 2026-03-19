@@ -4,30 +4,33 @@ interface ChainBadgeProps {
   showLabel?: boolean;
 }
 
-// 8 evenly-spaced equal rectangular segments at 45° intervals — clean radial wheel
-function MantleIcon({ size = 14, id = "cb" }: { size?: number; id?: string }) {
-  const angles = [0, 45, 90, 135, 180, 225, 270, 315];
-  const cx = 12, cy = 12, innerR = 3.6, segW = 2.4, segH = 4.8;
-  const gId = `mnt-${id}`;
+// Real Mantle logo: 20 segments alternating tall/short, white-at-top → green-at-bottom gradient
+// gradientUnits="userSpaceOnUse" means ALL rects share the same coordinate-space gradient:
+// segments at top of circle = white, segments at bottom = #00C896
+function MantleIcon({ size = 14, gid = "cb" }: { size?: number; gid?: string }) {
+  const cx = 12, cy = 12, innerR = 4.5, W = 2.2;
+  const id = `mnt-${gid}`;
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <defs>
-        <linearGradient id={gId} x1="0.5" y1="0" x2="0.5" y2="1">
-          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
-          <stop offset="100%" stopColor="#00C896" stopOpacity="1" />
+        <linearGradient id={id} x1="6" y1="1" x2="18" y2="23" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="100%" stopColor="#00C896" />
         </linearGradient>
       </defs>
-      {angles.map((angle, i) => {
+      {Array.from({ length: 20 }, (_, i) => {
+        const angle = i * 18;
+        const h = i % 2 === 0 ? 5.5 : 3.0;
         const rad = (angle - 90) * (Math.PI / 180);
-        const x = cx + Math.cos(rad) * (innerR + segH / 2) - segW / 2;
-        const y = cy + Math.sin(rad) * (innerR + segH / 2) - segH / 2;
+        const x = cx + Math.cos(rad) * (innerR + h / 2) - W / 2;
+        const y = cy + Math.sin(rad) * (innerR + h / 2) - h / 2;
         return (
           <rect
             key={i}
             x={x} y={y}
-            width={segW} height={segH}
-            rx={0.6}
-            fill={`url(#${gId})`}
+            width={W} height={h}
+            rx={0.45}
+            fill={`url(#${id})`}
             transform={`rotate(${angle}, ${cx}, ${cy})`}
           />
         );
@@ -63,7 +66,7 @@ export default function ChainBadge({ chain, size = "sm", showLabel = true }: Cha
           color: "#00C896",
         }}
       >
-        <MantleIcon size={iconSize} id="badge" />
+        <MantleIcon size={iconSize} gid="badge" />
         {showLabel && "Mantle"}
       </span>
     );

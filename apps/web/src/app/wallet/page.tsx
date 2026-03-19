@@ -83,8 +83,8 @@ function InlineChainSelector({
           >
             {c === "mantle" ? (
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                <defs><linearGradient id={`cs-mnt-${c}`} x1="0.5" y1="0" x2="0.5" y2="1"><stop offset="0%" stopColor="#fff" stopOpacity="0.95"/><stop offset="100%" stopColor="#00C896"/></linearGradient></defs>
-                {[0,45,90,135,180,225,270,315].map((a,i)=>{const r=(a-90)*Math.PI/180,h=4.8,w=2.4,cx=12,cy=12,ir=3.6;return(<rect key={i} x={cx+Math.cos(r)*(ir+h/2)-w/2} y={cy+Math.sin(r)*(ir+h/2)-h/2} width={w} height={h} rx={0.6} fill={`url(#cs-mnt-${c})`} transform={`rotate(${a},${cx},${cy})`}/>);})}
+                <defs><linearGradient id={`cs-mnt-${c}`} x1="6" y1="1" x2="18" y2="23" gradientUnits="userSpaceOnUse"><stop offset="0%" stopColor="#fff"/><stop offset="100%" stopColor="#00C896"/></linearGradient></defs>
+                {Array.from({length:20},(_,i)=>{const a=i*18,h=i%2===0?5.5:3.0,r=(a-90)*Math.PI/180,cx=12,cy=12,ir=4.5,w=2.2;return(<rect key={i} x={cx+Math.cos(r)*(ir+h/2)-w/2} y={cy+Math.sin(r)*(ir+h/2)-h/2} width={w} height={h} rx={0.45} fill={`url(#cs-mnt-${c})`} transform={`rotate(${a},${cx},${cy})`}/>);})}
               </svg>
             ) : (
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
@@ -769,8 +769,8 @@ export default function WalletPage() {
               >
                 {n.id === "mantle" ? (
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                    <defs><linearGradient id="wa-mnt" x1="0.5" y1="0" x2="0.5" y2="1"><stop offset="0%" stopColor="#fff" stopOpacity="0.95"/><stop offset="100%" stopColor="#00C896"/></linearGradient></defs>
-                    {[0,45,90,135,180,225,270,315].map((a,i)=>{const r=(a-90)*Math.PI/180,h=4.8,w=2.4,cx=12,cy=12,ir=3.6;return(<rect key={i} x={cx+Math.cos(r)*(ir+h/2)-w/2} y={cy+Math.sin(r)*(ir+h/2)-h/2} width={w} height={h} rx={0.6} fill="url(#wa-mnt)" transform={`rotate(${a},${cx},${cy})`}/>);})}
+                    <defs><linearGradient id="wa-mnt" x1="6" y1="1" x2="18" y2="23" gradientUnits="userSpaceOnUse"><stop offset="0%" stopColor="#fff"/><stop offset="100%" stopColor="#00C896"/></linearGradient></defs>
+                    {Array.from({length:20},(_,i)=>{const a=i*18,h=i%2===0?5.5:3.0,r=(a-90)*Math.PI/180,cx=12,cy=12,ir=4.5,w=2.2;return(<rect key={i} x={cx+Math.cos(r)*(ir+h/2)-w/2} y={cy+Math.sin(r)*(ir+h/2)-h/2} width={w} height={h} rx={0.45} fill="url(#wa-mnt)" transform={`rotate(${a},${cx},${cy})`}/>);})}
                   </svg>
                 ) : (
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none">

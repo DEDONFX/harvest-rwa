@@ -16,6 +16,7 @@ import { MOCK_ASSETS } from "@/lib/mock-data";
 import { formatUSD, formatNumber, countdown } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import type { Risk } from "@/types";
+import ChainBadge from "@/components/ui/ChainBadge";
 
 const SEVERITY_CONFIG = {
   low: { color: "text-green", bg: "bg-[rgba(0,200,150,0.1)]", icon: CheckCircle },
@@ -340,7 +341,8 @@ export default function AssetDetailPage() {
           <div className="absolute bottom-0 left-0 right-0 p-6">
             <div className="flex items-start justify-between">
               <div>
-                <div className="flex items-center gap-2 mb-2">
+                <div className="flex items-center gap-2 mb-2 flex-wrap">
+                  <ChainBadge chain={asset.chain} size="md" />
                   <span className="flex items-center gap-1 text-[10px] text-muted"><MapPin size={9} className="shrink-0" />{asset.location}</span>
                   <span className="text-muted">·</span>
                   <span className="text-[10px] text-muted">{asset.symbol}</span>

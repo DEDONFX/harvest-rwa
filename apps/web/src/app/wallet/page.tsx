@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ArrowDownLeft, ArrowUpRight, Send, Copy, Check, ExternalLink, Plus, Wallet, Shield, Zap, ChevronDown, Clock, AlertCircle, TrendingUp, Info } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, Send, Copy, Check, ExternalLink, Plus, Wallet, Shield, Zap, ChevronDown, Clock, AlertCircle, TrendingUp, Info, Eye, EyeOff, Key } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import AppShell from "@/components/layout/AppShell";
@@ -628,16 +628,28 @@ function ReceivePanel({ address, onClose }: { address: string; onClose: () => vo
   );
 }
 
+const MOCK_SEED_WORDS = [
+  "galaxy", "marble", "harvest", "orange", "river", "summit",
+  "velvet", "anchor", "temple", "frozen", "canvas", "bridge",
+];
+const MOCK_PRIVKEY_MANTLE = "0x7f3d8c9b2a1e4f6d0c5b8a9e3f2d1c7b4e8a9f3d2c1b7e4f6d0c5b8a9e3f2d1c";
+const MOCK_PRIVKEY_SOLANA = "4z7hKmN9pRvXwYqBsLcTfGjUoEiAkDnVeWxZrCuMbSyOl3QmHtJ6P8dF2gN5K1j8";
+
 export default function WalletPage() {
   const blocked = useAuthGuard("/wallet");
   const user = MOCK_USER;
   const [copied, setCopied] = useState(false);
   const [activePanel, setActivePanel] = useState<PanelType>(null);
+  const [walletChain, setWalletChain] = useState<"mantle" | "solana">("mantle");
+  const [showSeed, setShowSeed] = useState(false);
+  const [showPrivKey, setShowPrivKey] = useState(false);
+  const [secCopied, setSecCopied] = useState<"seed" | "key" | null>(null);
 
   if (blocked) return null;
 
   const copyAddress = () => {
-    navigator.clipboard.writeText(user.walletAddress);
+    const addr = walletChain === "mantle" ? user.walletAddress : MOCK_SOLANA_ADDRESS;
+    navigator.clipboard.writeText(addr);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -731,25 +743,51 @@ export default function WalletPage() {
           </div>
         )}
 
-        {/* Smart wallet address */}
+        {/* Smart wallet addresses — per network */}
         <div className="bg-card border border-border rounded-card p-5">
-          <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center gap-2 mb-4">
             <Wallet size={14} className="text-muted" />
-            <h3 className="text-sm font-medium text-white">Smart Wallet Address</h3>
-            <div className="ml-auto flex items-center gap-1.5">
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-bold"
-                style={{ background: "rgba(59,158,255,0.1)", borderColor: "rgba(59,158,255,0.25)", color: "#3B9EFF" }}>
-                Mantle
-              </span>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-bold"
-                style={{ background: "rgba(153,69,255,0.1)", borderColor: "rgba(153,69,255,0.25)", color: "#9945FF" }}>
-                Solana
-              </span>
-            </div>
+            <h3 className="text-sm font-medium text-white">Wallet Addresses</h3>
           </div>
+
+          {/* Network selector */}
+          <div className="flex gap-2 mb-4">
+            {([
+              { id: "mantle", label: "Mantle", color: "#3B9EFF", bg: "rgba(59,158,255,0.12)", border: "rgba(59,158,255,0.35)" },
+              { id: "solana", label: "Solana", color: "#9945FF", bg: "rgba(153,69,255,0.12)", border: "rgba(153,69,255,0.35)" },
+            ] as const).map((n) => (
+              <button
+                key={n.id}
+                onClick={() => { setWalletChain(n.id); setCopied(false); }}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all",
+                  walletChain !== n.id && "bg-card border-border text-muted hover:border-accent/30"
+                )}
+                style={walletChain === n.id ? { background: n.bg, borderColor: n.border, color: n.color } : undefined}
+              >
+                {n.id === "mantle" ? (
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                    <defs><linearGradient id="wa-mnt" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#fff"/><stop offset="100%" stopColor="#00C896"/></linearGradient></defs>
+                    {[0,31,62,93,124,155,186,217,248,279,310,341].map((a,i)=>{const r=(a-90)*Math.PI/180,h=i%2===0?4:3,cx=12,cy=12,ir=3.8;return(<rect key={i} x={cx+Math.cos(r)*(ir+h/2)-0.9} y={cy+Math.sin(r)*(ir+h/2)-h/2} width={1.8} height={h} rx={0.3} fill="url(#wa-mnt)" fillOpacity={0.7+i%2*0.2} transform={`rotate(${a},${cx},${cy})`}/>);})}
+                  </svg>
+                ) : (
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                    <path d="M6.5 15.5h9l-2 2h-9l2-2z" fill="#9945FF"/>
+                    <path d="M6.5 11.5h9l-2 2h-9l2-2z" fill="#9945FF" fillOpacity="0.7"/>
+                    <path d="M6.5 7.5h9l-2 2h-9l2-2z" fill="#14F195"/>
+                  </svg>
+                )}
+                {n.label}
+              </button>
+            ))}
+          </div>
+
+          <p className="text-xs text-muted mb-2 uppercase tracking-wide">
+            Your {walletChain === "mantle" ? "Mantle (EVM)" : "Solana"} Address
+          </p>
           <div className="flex items-center gap-2 bg-card2 rounded-xl px-4 py-3">
-            <code className="flex-1 font-mono text-sm text-muted break-all">
-              {user.walletAddress}
+            <code className="flex-1 font-mono text-sm text-offwhite break-all">
+              {walletChain === "mantle" ? user.walletAddress : MOCK_SOLANA_ADDRESS}
             </code>
             <button onClick={copyAddress} className="shrink-0 text-muted hover:text-offwhite transition-colors">
               {copied ? <Check size={14} className="text-green" /> : <Copy size={14} />}
@@ -758,6 +796,7 @@ export default function WalletPage() {
               <ExternalLink size={14} />
             </button>
           </div>
+          {copied && <p className="text-xs text-green mt-1.5">Copied to clipboard</p>}
           <div className="flex items-center gap-2 mt-3 text-xs text-muted">
             <Shield size={11} className="text-green" />
             <span>Secured by AWS CloudHSM · Gas fees absorbed by Harvest.rwa</span>
@@ -778,6 +817,115 @@ export default function WalletPage() {
           <button className="w-11 h-6 rounded-full bg-border relative transition-colors hover:bg-accent/30">
             <span className="w-5 h-5 rounded-full bg-muted absolute top-0.5 left-0.5 transition-transform" />
           </button>
+        </div>
+
+        {/* Backup & Security */}
+        <div className="bg-card border border-border rounded-card p-5">
+          <div className="flex items-center gap-2 mb-4">
+            <Key size={14} className="text-muted" />
+            <h3 className="text-sm font-medium text-white">Backup &amp; Security</h3>
+            <span className="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full border"
+              style={{ background: "rgba(249,168,37,0.1)", borderColor: "rgba(249,168,37,0.25)", color: "#F9A825" }}>
+              Sensitive
+            </span>
+          </div>
+
+          <div className="space-y-4">
+            {/* Seed phrase */}
+            <div className="bg-card2 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-1">
+                <div>
+                  <p className="text-sm font-medium text-offwhite">Recovery Seed Phrase</p>
+                  <p className="text-xs text-muted">12 words that restore your wallet on any device</p>
+                </div>
+                <button
+                  onClick={() => setShowSeed(!showSeed)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-card text-xs text-muted hover:text-offwhite hover:border-accent/30 transition-all shrink-0 ml-3"
+                >
+                  {showSeed ? <EyeOff size={11} /> : <Eye size={11} />}
+                  {showSeed ? "Hide" : "Reveal"}
+                </button>
+              </div>
+
+              {showSeed && (
+                <div className="mt-3 space-y-3 animate-fade-in">
+                  <div className="flex items-start gap-2 bg-amber-400/5 border border-amber-400/20 rounded-xl px-3 py-2.5">
+                    <AlertCircle size={11} className="text-amber-400 mt-0.5 shrink-0" />
+                    <p className="text-[11px] text-amber-400/90 leading-relaxed">
+                      Never share this with anyone. Anyone with these words can access your wallet.
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    {MOCK_SEED_WORDS.map((word, i) => (
+                      <div key={i} className="bg-card border border-border rounded-lg px-3 py-2 flex items-center gap-2">
+                        <span className="text-[10px] text-muted w-4 shrink-0">{i + 1}.</span>
+                        <span className="text-sm font-mono text-offwhite">{word}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(MOCK_SEED_WORDS.join(" "));
+                      setSecCopied("seed");
+                      setTimeout(() => setSecCopied(null), 2000);
+                    }}
+                    className="flex items-center gap-1.5 text-xs text-muted hover:text-offwhite transition-colors"
+                  >
+                    {secCopied === "seed" ? <Check size={11} className="text-green" /> : <Copy size={11} />}
+                    {secCopied === "seed" ? "Copied" : "Copy all words"}
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Private key */}
+            <div className="bg-card2 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-1">
+                <div>
+                  <p className="text-sm font-medium text-offwhite">Export Private Key</p>
+                  <p className="text-xs text-muted">
+                    {walletChain === "mantle" ? "Mantle (EVM) private key" : "Solana private key"}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowPrivKey(!showPrivKey)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-card text-xs text-muted hover:text-offwhite hover:border-accent/30 transition-all shrink-0 ml-3"
+                >
+                  {showPrivKey ? <EyeOff size={11} /> : <Eye size={11} />}
+                  {showPrivKey ? "Hide" : "Reveal"}
+                </button>
+              </div>
+
+              {showPrivKey && (
+                <div className="mt-3 space-y-3 animate-fade-in">
+                  <div className="flex items-start gap-2 bg-red/5 border border-red/20 rounded-xl px-3 py-2.5">
+                    <AlertCircle size={11} className="text-red mt-0.5 shrink-0" />
+                    <p className="text-[11px] text-red/90 leading-relaxed">
+                      Your private key gives full control of this wallet. Never share it or enter it on any site.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 bg-card border border-border rounded-xl px-4 py-3">
+                    <code className="flex-1 font-mono text-xs text-offwhite break-all">
+                      {walletChain === "mantle" ? MOCK_PRIVKEY_MANTLE : MOCK_PRIVKEY_SOLANA}
+                    </code>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(walletChain === "mantle" ? MOCK_PRIVKEY_MANTLE : MOCK_PRIVKEY_SOLANA);
+                        setSecCopied("key");
+                        setTimeout(() => setSecCopied(null), 2000);
+                      }}
+                      className="shrink-0 text-muted hover:text-offwhite transition-colors"
+                    >
+                      {secCopied === "key" ? <Check size={13} className="text-green" /> : <Copy size={13} />}
+                    </button>
+                  </div>
+                  <p className="text-[10px] text-muted">
+                    Showing key for {walletChain === "mantle" ? "Mantle / EVM" : "Solana"} network. Switch network above to see the other key.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Token Holdings */}

@@ -94,7 +94,7 @@ export default function SignUpPage() {
           </div>
           <div>
             <p className="font-syne font-black text-2xl text-white mb-2">Setting up your account…</p>
-            <p className="text-muted text-sm">Creating your smart wallet on Mantle Network</p>
+            <p className="text-muted text-sm">Creating your multichain smart wallet</p>
           </div>
           <div className="flex flex-col gap-2 mt-6 max-w-xs mx-auto">
             {[
@@ -218,7 +218,7 @@ export default function SignUpPage() {
         </div>
 
         <p className="text-xs text-muted">
-          Join 6,143 asset owners · Built on Mantle Network
+          Join 6,143 asset owners · Mantle + Solana Multichain
         </p>
       </div>
 

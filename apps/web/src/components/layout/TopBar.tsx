@@ -83,11 +83,17 @@ export default function TopBar({ isLoggedIn = true, onGate }: TopBarProps) {
           <span>Live</span>
         </div>
         {/* Multichain pill */}
-        <div className="flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-bold"
-          style={{ background: "rgba(59,158,255,0.06)", borderColor: "rgba(59,158,255,0.2)" }}>
-          <span style={{ color: "#3B9EFF" }}>M</span>
-          <span className="text-muted2">·</span>
-          <span style={{ color: "#9945FF" }}>◎</span>
+        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[10px] font-bold"
+          style={{ background: "rgba(255,255,255,0.03)", borderColor: "rgba(255,255,255,0.08)" }}>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
+            <path d="M5 17V7l4.5 5.5L12 7l2.5 5.5L19 7v10" stroke="#3B9EFF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          <span className="text-muted2 text-[8px]">+</span>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
+            <path d="M6.5 15.5h9l-2 2h-9l2-2z" fill="#9945FF"/>
+            <path d="M6.5 11.5h9l-2 2h-9l2-2z" fill="#9945FF" fillOpacity="0.7"/>
+            <path d="M6.5 7.5h9l-2 2h-9l2-2z" fill="#14F195"/>
+          </svg>
         </div>
       </div>
 

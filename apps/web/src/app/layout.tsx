@@ -26,11 +26,11 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "Harvest.rwa — Real World Asset Launchpad",
   description:
-    "The world's first AI-powered Real World Asset launchpad built on Mantle Network. Invest in tokenized real estate, infrastructure, and business yield from $10.",
-  keywords: ["RWA", "real world assets", "tokenization", "Mantle", "DeFi", "yield"],
+    "The world's first AI-powered multichain Real World Asset launchpad. Invest in tokenized real estate, infrastructure, and business yield from $10 — on Mantle and Solana.",
+  keywords: ["RWA", "real world assets", "tokenization", "Mantle", "Solana", "multichain", "DeFi", "yield"],
   openGraph: {
     title: "Harvest.rwa",
-    description: "AI-powered Real World Asset Launchpad on Mantle Network",
+    description: "AI-powered Multichain Real World Asset Launchpad — Mantle + Solana",
     type: "website",
   },
 };

@@ -100,18 +100,33 @@ export default function RightRail() {
           </div>
         </Link>
 
-        {/* Mantle badge */}
-        <div className="rounded-xl border border-border p-3 bg-card/50 flex items-center gap-2">
-          <div className="w-6 h-6 rounded-full bg-[#00D4AA]/15 border border-[#00D4AA]/30 flex items-center justify-center text-[10px]">
-            M
+        {/* Multichain badge */}
+        <div className="rounded-xl border border-border p-3 bg-card/50">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-[11px] font-semibold text-offwhite">Multichain Infrastructure</p>
+            <div className="flex items-center gap-1 text-[10px] text-green">
+              <span className="w-1.5 h-1.5 rounded-full bg-green animate-pulse" />
+              Live
+            </div>
           </div>
-          <div>
-            <p className="text-[11px] font-medium text-offwhite">Powered by Mantle</p>
-            <p className="text-[10px] text-muted">All transactions on-chain</p>
-          </div>
-          <div className="ml-auto flex items-center gap-1 text-[10px] text-green">
-            <span className="w-1.5 h-1.5 rounded-full bg-green animate-pulse" />
-            Live
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg border text-[10px] font-bold"
+              style={{ background: "rgba(59,158,255,0.08)", borderColor: "rgba(59,158,255,0.2)", color: "#3B9EFF" }}>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                <path d="M5 17V7l4.5 5.5L12 7l2.5 5.5L19 7v10" stroke="#3B9EFF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              Mantle
+            </div>
+            <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg border text-[10px] font-bold"
+              style={{ background: "rgba(153,69,255,0.08)", borderColor: "rgba(153,69,255,0.2)", color: "#9945FF" }}>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                <path d="M6.5 15.5h9l-2 2h-9l2-2z" fill="#9945FF"/>
+                <path d="M6.5 11.5h9l-2 2h-9l2-2z" fill="#9945FF" fillOpacity="0.7"/>
+                <path d="M6.5 7.5h9l-2 2h-9l2-2z" fill="#14F195"/>
+              </svg>
+              Solana
+            </div>
+            <p className="text-[9px] text-muted ml-auto">All txns on-chain</p>
           </div>
         </div>
 

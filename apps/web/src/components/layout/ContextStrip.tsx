@@ -103,10 +103,10 @@ export default function ContextStrip() {
         <p className="text-[9px] font-bold text-muted uppercase tracking-widest mb-2">Platform Health</p>
         <div className="flex flex-col divide-y divide-border">
           <div className="py-2">
-            <p className="text-[11px] font-semibold text-offwhite">Mantle Network</p>
+            <p className="text-[11px] font-semibold text-offwhite">Mantle + Solana</p>
             <div className="flex items-center gap-1 mt-0.5">
               <span className="w-1.5 h-1.5 rounded-full bg-green animate-pulse shrink-0" />
-              <p className="text-[10px] text-green">Operational</p>
+              <p className="text-[10px] text-green">Both Operational</p>
             </div>
           </div>
           <div className="py-2">

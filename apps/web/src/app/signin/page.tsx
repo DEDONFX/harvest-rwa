@@ -65,12 +65,12 @@ export default function SignInPage() {
             Your money is working<br />while you sleep.
           </p>
           <p className="text-sm text-muted">
-            6,143 investors earning yield from real-world assets on Mantle Network.
+            6,143 investors earning yield from real-world assets across Mantle and Solana.
           </p>
         </div>
 
         <p className="text-xs text-muted">
-          Powered by Mantle Network · All transactions on-chain · Gas fees absorbed
+          Mantle + Solana · All transactions on-chain · Gas fees absorbed
         </p>
       </div>
 

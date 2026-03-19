@@ -39,6 +39,7 @@ export default function DiscoverPage() {
   const [chainFilter, setChainFilter] = useState("All Chains");
   const [sort, setSort] = useState("Most Recent");
   const [view, setView] = useState<"grid" | "list">("grid");
+  const [showFilters, setShowFilters] = useState(false);
   const [page, setPage] = useState(1);
   const PER_PAGE = 12;
 
@@ -136,6 +137,19 @@ export default function DiscoverPage() {
               className="w-full bg-card border border-border rounded-btn pl-9 pr-3 py-2.5 text-sm text-offwhite placeholder:text-muted2 focus:border-accent focus:outline-none transition-colors"
             />
           </div>
+          <button
+            onClick={() => setShowFilters((v) => !v)}
+            className={cn(
+              "flex items-center gap-1.5 px-3 py-2.5 rounded-btn border text-sm transition-all",
+              showFilters
+                ? "bg-accent/15 border-accent text-accent"
+                : "bg-card border-border text-muted hover:text-offwhite hover:border-accent/30"
+            )}
+          >
+            <SlidersHorizontal size={14} />
+            Filters
+            <ChevronDown size={12} className={cn("transition-transform", showFilters && "rotate-180")} />
+          </button>
           <SelectFilter value={sort} options={SORT_OPTIONS} onChange={setSort} />
           <div className="flex items-center gap-1 border border-border rounded-btn overflow-hidden">
             <button
@@ -153,8 +167,8 @@ export default function DiscoverPage() {
           </div>
         </div>
 
-        {/* Filter panel — 4 labeled rows */}
-        <div className="space-y-3 mb-6 p-4 bg-card border border-border rounded-2xl">
+        {/* Filter panel — collapsible */}
+        {showFilters && <div className="space-y-3 mb-6 p-4 bg-card border border-border rounded-2xl">
 
           {/* Row 1: Network */}
           <div>
@@ -284,7 +298,7 @@ export default function DiscoverPage() {
             </div>
           </div>
 
-        </div>
+        </div>}
 
         {/* Grid / List view */}
         {filtered.length === 0 ? (

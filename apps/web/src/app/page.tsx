@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  Search, ChevronDown, LayoutGrid, List, Flame, Clock,
+  Search, ChevronDown, LayoutGrid, List, Flame, Clock, SlidersHorizontal,
   Users, TrendingUp, Zap, ArrowRight, Bell, Sparkles, Lock, MapPin
 } from "lucide-react";
 import TickerTape from "@/components/layout/TickerTape";
@@ -230,6 +230,7 @@ export default function LaunchpadPage() {
   const [view, setView] = useState<"grid" | "list">("grid");
   const [gateFeature, setGateFeature] = useState<string | null>(null);
   const [IS_LOGGED_IN, setIsLoggedIn] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     setIsLoggedIn(getIsLoggedIn());
@@ -343,6 +344,19 @@ export default function LaunchpadPage() {
                   className="w-full bg-card border border-border rounded-btn pl-9 pr-3 py-2.5 text-sm text-offwhite placeholder:text-muted2 focus:border-accent focus:outline-none transition-colors"
                 />
               </div>
+              <button
+                onClick={() => setShowFilters((v) => !v)}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-2.5 rounded-btn border text-sm transition-all",
+                  showFilters
+                    ? "bg-accent/15 border-accent text-accent"
+                    : "bg-card border-border text-muted hover:text-offwhite hover:border-accent/30"
+                )}
+              >
+                <SlidersHorizontal size={14} />
+                Filters
+                <ChevronDown size={12} className={cn("transition-transform", showFilters && "rotate-180")} />
+              </button>
               <div className="relative">
                 <select
                   value={sort}
@@ -363,8 +377,8 @@ export default function LaunchpadPage() {
               </div>
             </div>
 
-            {/* ── Filter panel — 4 separate rows, same on mobile & desktop ── */}
-            <div className="space-y-3 mb-6 p-4 bg-card border border-border rounded-2xl">
+            {/* ── Filter panel — collapsible ── */}
+            {showFilters && <div className="space-y-3 mb-6 p-4 bg-card border border-border rounded-2xl">
 
               {/* Row 1: Network */}
               <div>
@@ -458,7 +472,7 @@ export default function LaunchpadPage() {
                 </div>
               </div>
 
-            </div>
+            </div>}
 
             {/* Count */}
             <div className="flex items-center justify-between mb-4">

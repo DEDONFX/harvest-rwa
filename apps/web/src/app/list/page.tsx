@@ -5,20 +5,22 @@ import Link from "next/link";
 import {
   ArrowLeft, ArrowRight, CheckCircle, Clock, Zap, Shield,
   FileText, Camera, Users, BarChart2, Sparkles,
-  Upload, AlertTriangle, Info, Building2, Home, TrendingUp, Wheat, Rocket, Factory
+  Upload, AlertTriangle, Info, Building2, Home, TrendingUp, Wheat, Rocket, Factory,
+  Video, Loader2, ChevronRight, Play
 } from "lucide-react";
 import AppShell from "@/components/layout/AppShell";
 import Button from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 
 const PIPELINE_STAGES = [
-  { id: 1, label: "Application", icon: FileText, desc: "Submit your asset details & pay listing fee", time: "~30 min", color: "text-accent" },
-  { id: 2, label: "AI Pre-Screening", icon: Zap, desc: "Automated fraud & eligibility check", time: "24 hours", color: "text-accent2" },
-  { id: 3, label: "Internal Review", icon: Shield, desc: "Harvest.rwa compliance team review", time: "2–5 days", color: "text-gold" },
-  { id: 4, label: "Physical Verification", icon: Camera, desc: "Licensed regional partner visits asset", time: "5–15 days", color: "text-gold" },
-  { id: 5, label: "Identity Audit", icon: Users, desc: "Identity anchored onchain permanently", time: "1–2 days", color: "text-green" },
-  { id: 6, label: "DD Report", icon: Sparkles, desc: "AI generates public due diligence report", time: "2–4 hours", color: "text-green" },
-  { id: 7, label: "Launch", icon: BarChart2, desc: "Token deployed · Listing goes live", time: "Instant", color: "text-green" },
+  { id: 1, label: "Application",          icon: FileText, desc: "Submit your asset details & pay listing fee",             time: "~30 min",  color: "#3B9EFF", tag: null },
+  { id: 2, label: "AI Pre-Screening",     icon: Zap,      desc: "Automated fraud & eligibility check",                   time: "24 hours", color: "#00C896", tag: null },
+  { id: 3, label: "Internal Review",      icon: Shield,   desc: "Harvest.rwa compliance team review",                    time: "2–5 days", color: "#F9A825", tag: null },
+  { id: 4, label: "Physical Verification",icon: Camera,   desc: "Licensed regional partner visits and inspects asset",   time: "5–15 days",color: "#F9A825", tag: null },
+  { id: 5, label: "IP Camera Setup",      icon: Video,    desc: "IP camera installed at asset — live feed anchored onchain", time: "1–3 days", color: "#F97316", tag: "Optional" },
+  { id: 6, label: "Identity Audit",       icon: Users,    desc: "Originator identity anchored onchain permanently",      time: "1–2 days", color: "#A78BFA", tag: null },
+  { id: 7, label: "DD Report",            icon: Sparkles, desc: "AI generates public due diligence report",              time: "2–4 hours",color: "#00C896", tag: "AI" },
+  { id: 8, label: "Launch",               icon: BarChart2,desc: "Token deployed · Listing goes live",                   time: "Instant",  color: "#00C896", tag: "🚀" },
 ];
 
 const ASSET_TYPES = [
@@ -134,64 +136,174 @@ export default function ListAssetPage() {
 
   const update = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
+  const [pipelineStage, setPipelineStage] = useState(0); // 0 = just submitted (stage 1 done), 1 = stage 2 done, etc.
+  const [advancing, setAdvancing] = useState(false);
+
+  const advanceStage = () => {
+    if (pipelineStage >= PIPELINE_STAGES.length - 1 || advancing) return;
+    setAdvancing(true);
+    setTimeout(() => {
+      setPipelineStage((s) => s + 1);
+      setAdvancing(false);
+    }, 1200);
+  };
+
   const handleSubmit = () => {
     setLoading(true);
-    setTimeout(() => { setLoading(false); setSubmitted(true); }, 2000);
+    setTimeout(() => { setLoading(false); setSubmitted(true); setPipelineStage(0); }, 2000);
   };
 
   // ── Submitted ─────────────────────────────────────────────────────────────
   if (submitted) {
     const chain = CHAINS.find((c) => c.value === selectedChain);
+    const allDone = pipelineStage >= PIPELINE_STAGES.length - 1;
+
     return (
       <AppShell showRightRail={false}>
-        <div className="max-w-lg mx-auto text-center py-16">
-          <div className="w-20 h-20 rounded-full bg-green/15 border border-green/30 flex items-center justify-center mx-auto mb-6">
-            <CheckCircle size={36} className="text-green" />
+        <div className="max-w-lg mx-auto py-12">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <div className={cn(
+              "w-20 h-20 rounded-full border flex items-center justify-center mx-auto mb-5 transition-all duration-500",
+              allDone ? "bg-green/15 border-green/30" : "bg-accent/10 border-accent/25"
+            )}>
+              {allDone
+                ? <CheckCircle size={36} className="text-green" />
+                : advancing
+                  ? <Loader2 size={32} className="text-accent animate-spin" />
+                  : <Zap size={32} className="text-accent" />
+              }
+            </div>
+            <h1 className="font-syne font-black text-2xl text-white mb-1">
+              {allDone ? "Asset Launched 🚀" : "Application Submitted"}
+            </h1>
+            <p className="text-muted text-sm">
+              {allDone
+                ? "Your asset is live on the launchpad. Token contract deployed."
+                : "Your $200 listing fee has been received. Simulating pipeline stages below."}
+            </p>
+            {chain && (
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-bold mt-3"
+                style={{ background: chain.bg, borderColor: chain.border, color: chain.color }}>
+                <img src={chain.logo} alt={chain.name} width={14} height={14} style={{width:14,height:14,objectFit:"contain"}} />
+                Deploying on {chain.name}
+              </div>
+            )}
           </div>
-          <h1 className="font-syne font-black text-2xl text-white mb-2">Application Submitted</h1>
-          <p className="text-muted text-sm mb-2">
-            Your $200 listing fee has been received. AI pre-screening starts within 24 hours.
-          </p>
-          {chain && (
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-bold mb-8"
-              style={{ background: chain.bg, borderColor: chain.border, color: chain.color }}>
-              <img src={chain.logo} alt={chain.name} width={20} height={20} style={{width:20,height:20,objectFit:"contain"}} />
-              Deploying on {chain.name}
+
+          {/* Pipeline progress */}
+          <div className="bg-card border border-border rounded-2xl p-5 mb-5">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-xs text-muted uppercase tracking-widest font-bold">Pipeline Status</p>
+              <span className="text-[10px] font-mono text-muted2">{pipelineStage + 1} / {PIPELINE_STAGES.length} stages</span>
+            </div>
+
+            <div className="space-y-1">
+              {PIPELINE_STAGES.map((stage, i) => {
+                const done = i <= pipelineStage;
+                const current = i === pipelineStage + 1 && !allDone;
+                const isAdvancing = advancing && current;
+                const Icon = stage.icon;
+                return (
+                  <div key={stage.id} className={cn(
+                    "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300",
+                    done ? "bg-[rgba(0,200,150,0.06)]" : current ? "bg-card2 border border-border" : ""
+                  )}>
+                    {/* Status icon */}
+                    <div className={cn(
+                      "w-7 h-7 rounded-full flex items-center justify-center shrink-0 transition-all duration-300",
+                      done ? "bg-green/15 border border-green/30"
+                      : current ? "bg-accent/10 border border-accent/30"
+                      : "bg-card2 border border-border"
+                    )}>
+                      {done
+                        ? <CheckCircle size={13} className="text-green" />
+                        : isAdvancing
+                          ? <Loader2 size={12} className="text-accent animate-spin" />
+                          : current
+                            ? <Icon size={12} style={{ color: stage.color }} />
+                            : <span className="text-[10px] text-muted2 font-mono">{stage.id}</span>
+                      }
+                    </div>
+
+                    {/* Label + desc */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <span className={cn(
+                          "text-sm font-medium transition-colors",
+                          done ? "text-white" : current ? "text-offwhite" : "text-muted2"
+                        )}>{stage.label}</span>
+                        {stage.tag && (
+                          <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full"
+                            style={{ background: `${stage.color}20`, color: stage.color }}>
+                            {stage.tag}
+                          </span>
+                        )}
+                      </div>
+                      {(done || current) && (
+                        <p className="text-[10px] text-muted truncate">{stage.desc}</p>
+                      )}
+                    </div>
+
+                    {/* Status badge */}
+                    <div className="shrink-0">
+                      {done
+                        ? <span className="text-[10px] font-bold text-green">✓ Done</span>
+                        : current
+                          ? <span className="text-[10px] font-bold text-accent animate-pulse">In Review</span>
+                          : <span className="text-[10px] text-muted2 font-mono">{stage.time}</span>
+                      }
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Progress bar */}
+            <div className="mt-4 h-1 bg-card2 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-accent to-green rounded-full transition-all duration-700"
+                style={{ width: `${((pipelineStage + 1) / PIPELINE_STAGES.length) * 100}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Advance button or done state */}
+          {!allDone ? (
+            <button
+              onClick={advanceStage}
+              disabled={advancing}
+              className={cn(
+                "w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl border font-semibold text-sm transition-all",
+                advancing
+                  ? "bg-card border-border text-muted cursor-wait"
+                  : "bg-accent/10 border-accent/30 text-accent hover:bg-accent/20 hover:border-accent/50"
+              )}
+            >
+              {advancing ? (
+                <><Loader2 size={14} className="animate-spin" /> Processing stage {pipelineStage + 2}…</>
+              ) : (
+                <><Play size={13} /> Simulate: Complete Stage {pipelineStage + 2} — {PIPELINE_STAGES[pipelineStage + 1]?.label}</>
+              )}
+            </button>
+          ) : (
+            <div className="bg-green/5 border border-green/20 rounded-xl p-4 text-center mb-4">
+              <p className="text-sm text-green font-semibold mb-1">All 8 pipeline stages complete</p>
+              <p className="text-xs text-muted">In production, each stage has its own duration. This simulation compressed the full pipeline for testing.</p>
             </div>
           )}
 
-          <div className="bg-card border border-border rounded-2xl p-5 mb-8 text-left">
-            <p className="text-xs text-muted uppercase tracking-wide mb-4">Pipeline Status</p>
-            <div className="space-y-3">
-              {PIPELINE_STAGES.map((stage, i) => (
-                <div key={stage.id} className="flex items-center gap-3">
-                  <div className={cn(
-                    "w-7 h-7 rounded-full border flex items-center justify-center shrink-0",
-                    i === 0 ? "bg-green/15 border-green/30" : "bg-card2 border-border"
-                  )}>
-                    {i === 0
-                      ? <CheckCircle size={14} className="text-green" />
-                      : <span className="text-xs text-muted font-mono">{stage.id}</span>
-                    }
-                  </div>
-                  <div className="flex-1">
-                    <span className={cn("text-sm font-medium", i === 0 ? "text-white" : "text-muted")}>{stage.label}</span>
-                  </div>
-                  <span className={cn("text-xs font-mono", i === 0 ? "text-green" : "text-muted2")}>{i === 0 ? "Done" : stage.time}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="bg-[rgba(249,168,37,0.06)] border border-gold/20 rounded-2xl p-4 flex items-start gap-3 mb-8 text-left">
-            <Sparkles size={14} className="text-gold mt-0.5 shrink-0" />
-            <p className="text-xs text-muted leading-relaxed">
-              You'll receive email updates at each pipeline stage. The AI pre-screening report will be shared with you within 24 hours regardless of outcome.
+          <div className="mt-4 bg-[rgba(249,168,37,0.06)] border border-gold/20 rounded-xl p-3 flex items-start gap-2">
+            <Sparkles size={12} className="text-gold mt-0.5 shrink-0" />
+            <p className="text-[11px] text-muted leading-relaxed">
+              Email updates sent at each stage. The IP Camera Setup step (Stage 5) is optional but recommended for physical assets — it provides ongoing live verification for investors.
             </p>
           </div>
 
-          <Link href="/dashboard">
-            <Button variant="primary" size="lg" fullWidth>Back to Dashboard</Button>
+          <Link href="/dashboard" className="block mt-4">
+            <Button variant={allDone ? "primary" : "outline"} size="lg" fullWidth>
+              {allDone ? "View on Launchpad" : "Back to Dashboard"}
+            </Button>
           </Link>
         </div>
       </AppShell>

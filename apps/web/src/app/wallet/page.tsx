@@ -575,11 +575,12 @@ function ReceivePanel({ address, onClose }: { address: string; onClose: () => vo
         <InlineChainSelector value={chain} onChange={(c) => { setChain(c); setCopied(false); }} />
       </div>
       <p className="text-sm text-muted leading-relaxed">
-        Send tokens to your Harvest.rwa smart wallet on {chain === "mantle" ? "Mantle Network" : "Solana"}. {chain === "mantle" ? "Any ERC-20 token" : "Any SPL token"} sent to this address will appear in your holdings.
+        Send tokens to your Harvest.rwa smart wallet on {CHAIN_CONFIG[chain].label}.{" "}
+        {chain === "solana" ? "Any SPL token" : "Any ERC-20 / ERC-1400 token"} sent to this address will appear in your holdings.
       </p>
       <div>
         <p className="text-xs text-muted uppercase tracking-wide mb-2">
-          Your Wallet Address ({chain === "mantle" ? "Mantle" : "Solana"})
+          Your Wallet Address ({CHAIN_CONFIG[chain].label}{chain !== "solana" ? " · EVM" : ""})
         </p>
         <div className="flex items-center gap-2 bg-card2 border border-border rounded-xl px-4 py-3">
           <code className="flex-1 font-mono text-sm text-offwhite break-all">{displayAddress}</code>
@@ -592,9 +593,9 @@ function ReceivePanel({ address, onClose }: { address: string; onClose: () => vo
       <div className="flex items-start gap-2 bg-amber-400/5 border border-amber-400/20 rounded-xl px-4 py-3">
         <AlertCircle size={12} className="text-amber-400 mt-0.5 shrink-0" />
         <p className="text-xs text-amber-400/90 leading-relaxed">
-          {chain === "mantle"
-            ? "Only send Mantle-compatible tokens to this address. Tokens sent from other networks will be lost."
-            : "Only send Solana SPL tokens to this address. Tokens sent from other networks will be lost."}
+          {chain === "solana"
+            ? "Only send Solana SPL tokens to this address. Tokens from other networks will be lost."
+            : `Only send ${CHAIN_CONFIG[chain].label}-compatible tokens to this address. This is an EVM address — compatible with Mantle, Ethereum, BNB, Base, and AssetChain.`}
         </p>
       </div>
     </div>
@@ -726,33 +727,26 @@ export default function WalletPage() {
             <h3 className="text-sm font-medium text-white">Wallet Addresses</h3>
           </div>
 
-          {/* Network selector */}
-          <div className="flex gap-2 mb-4">
-            {([
-              { id: "mantle", label: "Mantle", color: "#3B9EFF", bg: "rgba(59,158,255,0.12)", border: "rgba(59,158,255,0.35)" },
-              { id: "solana", label: "Solana", color: "#9945FF", bg: "rgba(153,69,255,0.12)", border: "rgba(153,69,255,0.35)" },
-            ] as const).map((n) => (
-              <button
-                key={n.id}
-                onClick={() => { setWalletChain(n.id); setCopied(false); }}
-                className={cn(
-                  "flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all",
-                  walletChain !== n.id && "bg-card border-border text-muted hover:border-accent/30"
-                )}
-                style={walletChain === n.id ? { background: n.bg, borderColor: n.border, color: n.color } : undefined}
-              >
-                {n.id === "mantle" ? (
-                  <img src="/mantle-logo.svg" alt="Mantle" width={12} height={12} style={{width:12,height:12}} />
-                ) : (
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                    <path d="M6.5 15.5h9l-2 2h-9l2-2z" fill="#9945FF"/>
-                    <path d="M6.5 11.5h9l-2 2h-9l2-2z" fill="#9945FF" fillOpacity="0.7"/>
-                    <path d="M6.5 7.5h9l-2 2h-9l2-2z" fill="#14F195"/>
-                  </svg>
-                )}
-                {n.label}
-              </button>
-            ))}
+          {/* Network selector — all 6 chains */}
+          <div className="flex flex-wrap gap-1.5 mb-4">
+            {(Object.keys(CHAIN_CONFIG) as ChainId[]).map((id) => {
+              const cfg = CHAIN_CONFIG[id];
+              const active = walletChain === id;
+              return (
+                <button
+                  key={id}
+                  onClick={() => { setWalletChain(id); setCopied(false); }}
+                  className={cn(
+                    "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-semibold transition-all",
+                    active ? "" : "bg-card border-border text-muted hover:border-accent/30"
+                  )}
+                  style={active ? { background: cfg.bg, borderColor: cfg.border, color: cfg.color } : undefined}
+                >
+                  <img src={cfg.logo} alt={cfg.label} width={12} height={12} style={{ width: 12, height: 12, objectFit: "contain" }} />
+                  {cfg.label}
+                </button>
+              );
+            })}
           </div>
 
           <p className="text-xs text-muted mb-2 uppercase tracking-wide">

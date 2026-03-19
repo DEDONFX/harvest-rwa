@@ -1,0 +1,173 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-syne: "Syne", sans-serif;
+  --font-dm-sans: "DM Sans", sans-serif;
+  --font-jetbrains: "JetBrains Mono", monospace;
+
+  /* Design tokens */
+  --ink: #0A0A0F;
+  --surface: #111118;
+  --card: #16161F;
+  --card2: #1C1C28;
+  --border: #1E1E2E;
+  --divider: #2A2A3E;
+  --accent: #6C5CE7;
+  --accent-dim: rgba(108,92,231,0.15);
+  --accent2: #00D2FF;
+  --accent2-dim: rgba(0,210,255,0.12);
+  --gold: #F9A825;
+  --gold-dim: rgba(249,168,37,0.12);
+  --green: #00C896;
+  --red: #FF4757;
+  --offwhite: #E8E8F0;
+  --muted: #7A7A9D;
+  --muted2: #4A4A6A;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #0A0A0F;
+  color: #E8E8F0;
+  font-family: var(--font-dm-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: #111118;
+}
+::-webkit-scrollbar-thumb {
+  background: #2A2A3E;
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #4A4A6A;
+}
+
+/* Selection */
+::selection {
+  background: rgba(108, 92, 231, 0.3);
+  color: #fff;
+}
+
+/* Shimmer skeleton */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #16161F 25%,
+    #1C1C28 50%,
+    #16161F 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Progress bar gradient */
+.progress-fill {
+  background: linear-gradient(90deg, #6C5CE7, #00D2FF);
+}
+
+/* Number font — always JetBrains */
+.num {
+  font-family: var(--font-jetbrains);
+}
+
+/* Ticker tape */
+.ticker-wrap {
+  overflow: hidden;
+  white-space: nowrap;
+}
+.ticker-inner {
+  display: inline-flex;
+  animation: ticker 80s linear infinite;
+  will-change: transform;
+}
+.ticker-inner:hover {
+  animation-play-state: paused;
+}
+@keyframes ticker {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Card hover base */
+.card-hover {
+  transition: transform 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+}
+.card-hover:hover {
+  transform: translateY(-3px);
+  border-color: #6C5CE7;
+  box-shadow: 0 0 20px rgba(108,92,231,0.25);
+}
+
+/* Glow effects */
+.glow-accent {
+  box-shadow: 0 0 20px rgba(108,92,231,0.35);
+}
+.glow-green {
+  box-shadow: 0 0 15px rgba(0,200,150,0.3);
+}
+.glow-gold {
+  box-shadow: 0 0 15px rgba(249,168,37,0.3);
+}
+
+/* Input focus ring */
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: #6C5CE7 !important;
+  box-shadow: 0 0 0 2px rgba(108,92,231,0.2);
+}
+
+/* Hide number input arrows */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+/* Animate number updates */
+@keyframes flash-green {
+  0% { color: #00C896; }
+  100% { color: inherit; }
+}
+.flash-green {
+  animation: flash-green 1s ease-out;
+}
+
+/* Right rail activity item */
+.activity-new {
+  animation: activity-flash 0.6s ease-out;
+}
+@keyframes activity-flash {
+  0% { background: rgba(249,168,37,0.15); }
+  100% { background: transparent; }
+}
+
+/* Risk pip */
+.pip {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.pip-filled-green { background: #00C896; }
+.pip-filled-amber { background: #F9A825; }
+.pip-filled-red   { background: #FF4757; }
+.pip-empty        { background: #2A2A3E; }

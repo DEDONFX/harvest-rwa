@@ -271,17 +271,28 @@ export default function MarketPage() {
   const [trades, setTrades] = useState<Record<string, any[]>>(() =>
     Object.fromEntries(assets.map((a) => [a.id, []]))
   );
-  const chartRef = useRef<HTMLDivElement>(null);
-  const [chartW, setChartW] = useState(0);
+  const chartRefDesktop = useRef<HTMLDivElement>(null);
+  const chartRefMobile = useRef<HTMLDivElement>(null);
+  const [chartWDesktop, setChartWDesktop] = useState(0);
+  const [chartWMobile, setChartWMobile] = useState(0);
 
   const selected = live[selectedId];
 
   useEffect(() => {
-    const el = chartRef.current;
+    const el = chartRefDesktop.current;
     if (!el) return;
-    const obs = new ResizeObserver(() => setChartW(el.clientWidth));
+    const obs = new ResizeObserver(() => setChartWDesktop(el.clientWidth));
     obs.observe(el);
-    setChartW(el.clientWidth);
+    setChartWDesktop(el.clientWidth);
+    return () => obs.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const el = chartRefMobile.current;
+    if (!el) return;
+    const obs = new ResizeObserver(() => setChartWMobile(el.clientWidth));
+    obs.observe(el);
+    setChartWMobile(el.clientWidth);
     return () => obs.disconnect();
   }, []);
 
@@ -426,9 +437,9 @@ export default function MarketPage() {
                 <RefreshCw size={9} className="animate-spin" style={{ animationDuration: "3s" }} />Live
               </div>
             </div>
-            <div ref={chartRef} className="flex-1 min-h-0 bg-card rounded-xl border border-border p-3 overflow-hidden">
-              {chartW > 0 && (
-                <CandlestickSVG data={selected.ohlc} width={chartW - 24} height={Math.max(200, (chartRef.current?.clientHeight ?? 300) - 24)} />
+            <div ref={chartRefDesktop} className="flex-1 min-h-0 bg-card rounded-xl border border-border p-3 overflow-hidden">
+              {chartWDesktop > 0 && (
+                <CandlestickSVG data={selected.ohlc} width={chartWDesktop - 24} height={Math.max(200, (chartRefDesktop.current?.clientHeight ?? 300) - 24)} />
               )}
             </div>
           </div>
@@ -537,8 +548,8 @@ export default function MarketPage() {
               <RefreshCw size={8} className="animate-spin" style={{ animationDuration: "3s" }} />Live
             </div>
           </div>
-          <div ref={chartRef} className="bg-card rounded-xl border border-border p-2 overflow-hidden" style={{ height: 220 }}>
-            {chartW > 0 && <CandlestickSVG data={selected.ohlc} width={chartW - 16} height={200} />}
+          <div ref={chartRefMobile} className="bg-card rounded-xl border border-border p-2 overflow-hidden" style={{ height: 220 }}>
+            {chartWMobile > 0 && <CandlestickSVG data={selected.ohlc} width={chartWMobile - 16} height={200} />}
           </div>
         </div>
 

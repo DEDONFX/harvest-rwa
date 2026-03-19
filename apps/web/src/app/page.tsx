@@ -35,6 +35,17 @@ const RISK_CHIPS = ["Any Risk", "Low (1–4)", "Mid (5–6)", "High (7–10)"];
 const YIELD_CHIPS = ["Any Yield", "5–10%", "10–15%", "15%+"];
 const SORT_OPTIONS = ["Trending", "Highest Yield", "Lowest Risk", "Most Holders", "Ending Soon"];
 
+type ChainFilter = "all" | "mantle" | "solana" | "ethereum" | "bnb" | "base" | "assetchain";
+const CHAIN_FILTERS: { id: ChainFilter; label: string; logo?: string; color: string; bg: string; border: string }[] = [
+  { id: "all",        label: "All Chains",  color: "#ffffff", bg: "rgba(255,255,255,0.08)", border: "rgba(255,255,255,0.2)" },
+  { id: "mantle",     label: "Mantle",      logo: "/mantle-logo.png",     color: "#00C896", bg: "rgba(0,200,150,0.1)",   border: "rgba(0,200,150,0.3)"   },
+  { id: "solana",     label: "Solana",      logo: "/solana-logo.png",     color: "#9945FF", bg: "rgba(153,69,255,0.1)",  border: "rgba(153,69,255,0.25)" },
+  { id: "ethereum",   label: "Ethereum",    logo: "/eth-logo.png",        color: "#627EEA", bg: "rgba(98,126,234,0.1)",  border: "rgba(98,126,234,0.25)" },
+  { id: "bnb",        label: "BNB",         logo: "/bnb-logo.png",        color: "#F3BA2F", bg: "rgba(243,186,47,0.1)",  border: "rgba(243,186,47,0.25)" },
+  { id: "base",       label: "Base",        logo: "/base-logo.svg",       color: "#0052FF", bg: "rgba(0,82,255,0.1)",    border: "rgba(0,82,255,0.25)"   },
+  { id: "assetchain", label: "AssetChain",  logo: "/assetchain-logo.png", color: "#2B7EF7", bg: "rgba(43,126,247,0.1)",  border: "rgba(43,126,247,0.25)" },
+];
+
 function StatPill({ value, label, color = "text-offwhite" }: { value: string; label: string; color?: string }) {
   return (
     <div className="flex items-center gap-1.5 text-xs">
@@ -212,6 +223,7 @@ function TrendingStrip({ assets }: { assets: Asset[] }) {
 export default function LaunchpadPage() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("All");
+  const [chainFilter, setChainFilter] = useState<ChainFilter>("all");
   const [risk, setRisk] = useState("Any Risk");
   const [yieldFilter, setYield] = useState("Any Yield");
   const [sort, setSort] = useState("Trending");
@@ -239,6 +251,8 @@ export default function LaunchpadPage() {
 
     if (search) list = list.filter((a) => a.name.toLowerCase().includes(search.toLowerCase()) || a.location.toLowerCase().includes(search.toLowerCase()));
 
+    if (chainFilter !== "all") list = list.filter((a) => a.chain === chainFilter);
+
     if (filter === "Hot") list = list.filter((a) => a.trending);
     else if (filter === "New") list = list.filter((a) => a.status === "live");
     else if (filter === "Ending Soon") list = list.filter((a) => a.status === "live").sort((a, b) => new Date(a.closeDate).getTime() - new Date(b.closeDate).getTime());
@@ -262,7 +276,7 @@ export default function LaunchpadPage() {
     else list.sort((a, b) => (b.trending ? 1 : 0) - (a.trending ? 1 : 0));
 
     return list;
-  }, [search, filter, risk, yieldFilter, sort]);
+  }, [search, filter, chainFilter, risk, yieldFilter, sort]);
 
   const trending = MOCK_ASSETS.filter((a) => a.trending);
 
@@ -347,6 +361,34 @@ export default function LaunchpadPage() {
                   </button>
                 ))}
               </div>
+            </div>
+
+            {/* Chain filter row — visible on ALL screen sizes */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 mb-3 scrollbar-none">
+              {CHAIN_FILTERS.map((c) => {
+                const active = chainFilter === c.id;
+                return (
+                  <button
+                    key={c.id}
+                    onClick={() => setChainFilter(c.id)}
+                    className={cn(
+                      "shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-all whitespace-nowrap",
+                      active ? "" : "bg-card border-border text-muted hover:text-offwhite hover:border-white/20"
+                    )}
+                    style={active ? { background: c.bg, borderColor: c.border, color: c.color } : undefined}
+                  >
+                    {c.logo && (
+                      <img src={c.logo} alt={c.label} width={12} height={12} style={{ width: 12, height: 12, objectFit: "contain" }} />
+                    )}
+                    {c.label}
+                    {active && c.id !== "all" && (
+                      <span className="ml-0.5 text-[9px] opacity-70">
+                        ({MOCK_ASSETS.filter(a => a.chain === c.id).length})
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
 
             {/* Filter chips */}

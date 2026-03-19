@@ -153,80 +153,137 @@ export default function DiscoverPage() {
           </div>
         </div>
 
-        {/* Filter chips */}
-        <div className="flex gap-2 overflow-x-auto pb-2 mb-6 flex-wrap">
-          {CATEGORIES.map((c) => (
-            <button
-              key={c}
-              onClick={() => setCategory(c)}
-              className={cn(
-                "shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-all",
-                category === c
-                  ? "bg-accent/15 border-accent text-accent"
-                  : "bg-card border-border text-muted hover:text-offwhite hover:border-accent/30"
-              )}
-            >
-              {c}
-            </button>
-          ))}
-          <div className="border-l border-border mx-1" />
-          {RISK_FILTERS.map((r) => (
-            <button
-              key={r}
-              onClick={() => setRiskFilter(r)}
-              className={cn(
-                "shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-all",
-                riskFilter === r
-                  ? "bg-accent/15 border-accent text-accent"
-                  : "bg-card border-border text-muted hover:text-offwhite hover:border-accent/30"
-              )}
-            >
-              {r}
-            </button>
-          ))}
-          <div className="border-l border-border mx-1" />
-          {YIELD_FILTERS.map((y) => (
-            <button
-              key={y}
-              onClick={() => setYieldFilter(y)}
-              className={cn(
-                "shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-all",
-                yieldFilter === y
-                  ? "bg-accent/15 border-accent text-accent"
-                  : "bg-card border-border text-muted hover:text-offwhite hover:border-accent/30"
-              )}
-            >
-              {y}
-            </button>
-          ))}
-          <div className="border-l border-border mx-1" />
-          {CHAIN_FILTERS.map((c) => {
-            const meta: Record<string, { color: string; logo?: string; label: string }> = {
-              "Mantle":     { color: "#00C896", logo: "/mantle-logo.png",     label: "Mantle"     },
-              "Solana":     { color: "#9945FF", logo: "/solana-logo.png",     label: "Solana"     },
-              "Ethereum":   { color: "#627EEA", logo: "/eth-logo.png",        label: "Ethereum"   },
-              "BNB":        { color: "#F3BA2F", logo: "/bnb-logo.png",        label: "BNB"        },
-              "Base":       { color: "#0052FF", logo: "/base-logo.svg",       label: "Base"       },
-              "AssetChain": { color: "#2B7EF7", logo: "/assetchain-logo.png", label: "AssetChain" },
-            };
-            const m = meta[c];
-            const active = chainFilter === c;
-            return (
-              <button
-                key={c}
-                onClick={() => setChainFilter(c)}
-                className={cn(
-                  "shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-all",
-                  active && m ? "" : "bg-card border-border text-muted hover:text-offwhite hover:border-accent/30",
-                  active && !m ? "bg-accent/15 border-accent text-accent" : ""
-                )}
-                style={active && m ? { background: `${m.color}18`, borderColor: `${m.color}50`, color: m.color } : {}}
-              >
-                {m?.logo && <img src={m.logo} alt={c} width={11} height={11} style={{ width: 11, height: 11, objectFit: "contain" }} />}
-                {c}
-              </button>
-            );
-          })}
+        {/* Filter panel — 4 labeled rows */}
+        <div className="space-y-3 mb-6 p-4 bg-card border border-border rounded-2xl">
+
+          {/* Row 1: Network */}
+          <div>
+            <p className="text-[10px] text-muted uppercase tracking-widest font-bold mb-2 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-green animate-pulse" /> Network
+            </p>
+            <div className="flex gap-2 overflow-x-auto scrollbar-none pb-0.5">
+              {CHAIN_FILTERS.map((c) => {
+                const CHAIN_META: Record<string, { color: string; bg: string; border: string; logo?: string }> = {
+                  "All Chains": { color: "#ffffff", bg: "rgba(255,255,255,0.08)", border: "rgba(255,255,255,0.2)" },
+                  "Mantle":     { color: "#00C896", bg: "rgba(0,200,150,0.1)",   border: "rgba(0,200,150,0.3)",   logo: "/mantle-logo.png"     },
+                  "Solana":     { color: "#9945FF", bg: "rgba(153,69,255,0.1)",  border: "rgba(153,69,255,0.25)", logo: "/solana-logo.png"     },
+                  "Ethereum":   { color: "#627EEA", bg: "rgba(98,126,234,0.1)",  border: "rgba(98,126,234,0.25)", logo: "/eth-logo.png"        },
+                  "BNB":        { color: "#F3BA2F", bg: "rgba(243,186,47,0.1)",  border: "rgba(243,186,47,0.25)", logo: "/bnb-logo.png"        },
+                  "Base":       { color: "#0052FF", bg: "rgba(0,82,255,0.1)",    border: "rgba(0,82,255,0.25)",   logo: "/base-logo.svg"       },
+                  "AssetChain": { color: "#2B7EF7", bg: "rgba(43,126,247,0.1)",  border: "rgba(43,126,247,0.25)", logo: "/assetchain-logo.png" },
+                };
+                const m = CHAIN_META[c];
+                const active = chainFilter === c;
+                return (
+                  <button
+                    key={c}
+                    onClick={() => setChainFilter(c)}
+                    className={cn(
+                      "shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-all whitespace-nowrap",
+                      active ? "" : "bg-card2 border-border text-muted hover:text-offwhite hover:border-white/20"
+                    )}
+                    style={active && m ? { background: m.bg, borderColor: m.border, color: m.color } : undefined}
+                  >
+                    {m?.logo && <img src={m.logo} alt={c} width={13} height={13} style={{ width: 13, height: 13, objectFit: "contain" }} />}
+                    {c}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="border-t border-border" />
+
+          {/* Row 2: Asset Type */}
+          <div>
+            <p className="text-[10px] text-muted uppercase tracking-widest font-bold mb-2">Asset Type</p>
+            <div className="flex gap-2 overflow-x-auto scrollbar-none pb-0.5">
+              {CATEGORIES.map((c) => (
+                <button
+                  key={c}
+                  onClick={() => setCategory(c)}
+                  className={cn(
+                    "shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-all whitespace-nowrap",
+                    category === c
+                      ? "bg-accent/15 border-accent text-accent"
+                      : "bg-card2 border-border text-muted hover:text-offwhite hover:border-accent/30"
+                  )}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="border-t border-border" />
+
+          {/* Row 3: Risk Level */}
+          <div>
+            <p className="text-[10px] text-muted uppercase tracking-widest font-bold mb-2">Risk Level</p>
+            <div className="flex gap-2 overflow-x-auto scrollbar-none pb-0.5">
+              {RISK_FILTERS.map((r) => (
+                <button
+                  key={r}
+                  onClick={() => setRiskFilter(r)}
+                  className={cn(
+                    "shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-all whitespace-nowrap",
+                    riskFilter === r
+                      ? "bg-accent/15 border-accent text-accent"
+                      : "bg-card2 border-border text-muted hover:text-offwhite hover:border-accent/30"
+                  )}
+                >
+                  {r}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="border-t border-border" />
+
+          {/* Row 4: Yield Range */}
+          <div>
+            <p className="text-[10px] text-muted uppercase tracking-widest font-bold mb-2">Yield Range</p>
+            <div className="flex gap-2 overflow-x-auto scrollbar-none pb-0.5">
+              {YIELD_FILTERS.map((y) => (
+                <button
+                  key={y}
+                  onClick={() => setYieldFilter(y)}
+                  className={cn(
+                    "shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-all whitespace-nowrap",
+                    yieldFilter === y
+                      ? "bg-accent/15 border-accent text-accent"
+                      : "bg-card2 border-border text-muted hover:text-offwhite hover:border-accent/30"
+                  )}
+                >
+                  {y}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="border-t border-border" />
+
+          {/* Row 5: Status */}
+          <div>
+            <p className="text-[10px] text-muted uppercase tracking-widest font-bold mb-2">Status</p>
+            <div className="flex gap-2 overflow-x-auto scrollbar-none pb-0.5">
+              {STATUS_FILTERS.map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setStatusFilter(s)}
+                  className={cn(
+                    "shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-all whitespace-nowrap",
+                    statusFilter === s
+                      ? "bg-accent/15 border-accent text-accent"
+                      : "bg-card2 border-border text-muted hover:text-offwhite hover:border-accent/30"
+                  )}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          </div>
+
         </div>
 
         {/* Grid / List view */}

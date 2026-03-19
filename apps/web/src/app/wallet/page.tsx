@@ -31,15 +31,87 @@ function CountdownTimer({ minutes }: { minutes: number }) {
   );
 }
 
+const CHAIN_CONFIG = {
+  mantle: {
+    label: "Mantle",
+    placeholder: "0x...",
+    validate: (addr: string) => /^0x[0-9a-fA-F]{40}$/.test(addr.trim()),
+    errorMsg: "Must be a valid Mantle / EVM address (0x…)",
+    warning: "Transfers on Mantle are irreversible. Double-check the address before continuing.",
+    color: "#3B9EFF",
+    bg: "rgba(59,158,255,0.12)",
+    border: "rgba(59,158,255,0.35)",
+  },
+  solana: {
+    label: "Solana",
+    placeholder: "Base58 address…",
+    validate: (addr: string) => /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(addr.trim()),
+    errorMsg: "Must be a valid Solana base58 address",
+    warning: "Transfers on Solana are irreversible. Double-check the address before continuing.",
+    color: "#9945FF",
+    bg: "rgba(153,69,255,0.12)",
+    border: "rgba(153,69,255,0.35)",
+  },
+} as const;
+
+function InlineChainSelector({
+  value,
+  onChange,
+}: {
+  value: "mantle" | "solana";
+  onChange: (c: "mantle" | "solana") => void;
+}) {
+  return (
+    <div className="flex gap-2">
+      {(["mantle", "solana"] as const).map((c) => {
+        const cfg = CHAIN_CONFIG[c];
+        const active = value === c;
+        return (
+          <button
+            key={c}
+            type="button"
+            onClick={() => onChange(c)}
+            className={cn(
+              "flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all",
+              active ? "" : "bg-card border-border text-muted hover:border-accent/30"
+            )}
+            style={
+              active
+                ? { background: cfg.bg, borderColor: cfg.border, color: cfg.color }
+                : undefined
+            }
+          >
+            {c === "mantle" ? (
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                <defs><linearGradient id={`cs-mnt-${c}`} x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#fff"/><stop offset="100%" stopColor="#00C896"/></linearGradient></defs>
+                {[0,31,62,93,124,155,186,217,248,279,310,341].map((a,i)=>{const r=(a-90)*Math.PI/180,h=i%2===0?4:3,cx=12,cy=12,ir=3.8;return(<rect key={i} x={cx+Math.cos(r)*(ir+h/2)-0.9} y={cy+Math.sin(r)*(ir+h/2)-h/2} width={1.8} height={h} rx={0.3} fill={`url(#cs-mnt-${c})`} fillOpacity={0.7+i%2*0.2} transform={`rotate(${a},${cx},${cy})`}/>);})}
+              </svg>
+            ) : (
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                <path d="M6.5 15.5h9l-2 2h-9l2-2z" fill="#9945FF"/>
+                <path d="M6.5 11.5h9l-2 2h-9l2-2z" fill="#9945FF" fillOpacity="0.7"/>
+                <path d="M6.5 7.5h9l-2 2h-9l2-2z" fill="#14F195"/>
+              </svg>
+            )}
+            {cfg.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 function SendPanel({ onClose }: { onClose: () => void }) {
   const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [chain, setChain] = useState<"mantle" | "solana">("mantle");
   const [recipient, setRecipient] = useState("");
   const [assetId, setAssetId] = useState<"usdc" | string>("usdc");
   const [tokenAmount, setTokenAmount] = useState("");
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
 
-  const isValidAddress = /^0x[0-9a-fA-F]{40}$/.test(recipient.trim());
+  const chainCfg = CHAIN_CONFIG[chain];
+  const isValidAddress = chainCfg.validate(recipient);
 
   const assets = [
     { id: "usdc", label: "USDC", sub: "Cash balance", value: MOCK_USER.balance, unit: "USDC" },
@@ -91,10 +163,14 @@ function SendPanel({ onClose }: { onClose: () => void }) {
       {step === 1 && (
         <div className="space-y-4">
           <div>
+            <p className="text-xs text-muted uppercase tracking-wide mb-2">Destination Chain</p>
+            <InlineChainSelector value={chain} onChange={(c) => { setChain(c); setRecipient(""); }} />
+          </div>
+          <div>
             <p className="text-xs text-muted uppercase tracking-wide mb-2">Recipient Wallet Address</p>
             <input
               type="text"
-              placeholder="0x..."
+              placeholder={chainCfg.placeholder}
               value={recipient}
               onChange={(e) => setRecipient(e.target.value)}
               className={cn(
@@ -104,7 +180,7 @@ function SendPanel({ onClose }: { onClose: () => void }) {
             />
             {recipient && !isValidAddress && (
               <p className="text-xs text-red mt-1.5 flex items-center gap-1">
-                <AlertCircle size={11} /> Must be a valid 0x Mantle address
+                <AlertCircle size={11} /> {chainCfg.errorMsg}
               </p>
             )}
             {recipient && isValidAddress && (
@@ -116,9 +192,7 @@ function SendPanel({ onClose }: { onClose: () => void }) {
 
           <div className="flex items-start gap-2 bg-amber-400/5 border border-amber-400/20 rounded-xl px-4 py-3">
             <AlertCircle size={12} className="text-amber-400 mt-0.5 shrink-0" />
-            <p className="text-xs text-amber-400/90">
-              Transfers on Mantle are irreversible. Double-check the address before continuing.
-            </p>
+            <p className="text-xs text-amber-400/90">{chainCfg.warning}</p>
           </div>
 
           <Button variant="primary" size="lg" fullWidth disabled={!isValidAddress} onClick={() => setStep(2)}>
@@ -202,6 +276,7 @@ function SendPanel({ onClose }: { onClose: () => void }) {
           <div className="bg-card2 rounded-xl divide-y divide-border">
             {[
               { label: "To", value: truncateAddress(recipient), mono: true },
+              { label: "Chain", value: chainCfg.label, mono: false },
               { label: "Asset", value: selected.label, mono: false },
               { label: "Amount", value: `${amountNum.toLocaleString()} ${selected.unit}`, mono: true },
               { label: "Network fee", value: "Covered by Harvest.rwa", mono: false },
@@ -505,10 +580,14 @@ function P2PPanel({ type, onClose }: { type: PanelType; onClose: () => void }) {
   );
 }
 
+const MOCK_SOLANA_ADDRESS = "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU";
+
 function ReceivePanel({ address, onClose }: { address: string; onClose: () => void }) {
+  const [chain, setChain] = useState<"mantle" | "solana">("mantle");
   const [copied, setCopied] = useState(false);
+  const displayAddress = chain === "mantle" ? address : MOCK_SOLANA_ADDRESS;
   const copy = () => {
-    navigator.clipboard.writeText(address);
+    navigator.clipboard.writeText(displayAddress);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -518,13 +597,19 @@ function ReceivePanel({ address, onClose }: { address: string; onClose: () => vo
         <h3 className="font-syne font-bold text-white">Receive / Import Tokens</h3>
         <button onClick={onClose} className="text-muted hover:text-offwhite text-xl leading-none">&times;</button>
       </div>
+      <div>
+        <p className="text-xs text-muted uppercase tracking-wide mb-2">Select Network</p>
+        <InlineChainSelector value={chain} onChange={(c) => { setChain(c); setCopied(false); }} />
+      </div>
       <p className="text-sm text-muted leading-relaxed">
-        Send tokens to your Harvest.rwa smart wallet on Mantle Network. Any ERC-20 token sent to this address will appear in your holdings.
+        Send tokens to your Harvest.rwa smart wallet on {chain === "mantle" ? "Mantle Network" : "Solana"}. {chain === "mantle" ? "Any ERC-20 token" : "Any SPL token"} sent to this address will appear in your holdings.
       </p>
       <div>
-        <p className="text-xs text-muted uppercase tracking-wide mb-2">Your Wallet Address (Mantle)</p>
+        <p className="text-xs text-muted uppercase tracking-wide mb-2">
+          Your Wallet Address ({chain === "mantle" ? "Mantle" : "Solana"})
+        </p>
         <div className="flex items-center gap-2 bg-card2 border border-border rounded-xl px-4 py-3">
-          <code className="flex-1 font-mono text-sm text-offwhite break-all">{address}</code>
+          <code className="flex-1 font-mono text-sm text-offwhite break-all">{displayAddress}</code>
           <button onClick={copy} className="shrink-0 text-muted hover:text-offwhite transition-colors">
             {copied ? <Check size={14} className="text-green" /> : <Copy size={14} />}
           </button>
@@ -533,7 +618,11 @@ function ReceivePanel({ address, onClose }: { address: string; onClose: () => vo
       </div>
       <div className="flex items-start gap-2 bg-amber-400/5 border border-amber-400/20 rounded-xl px-4 py-3">
         <AlertCircle size={12} className="text-amber-400 mt-0.5 shrink-0" />
-        <p className="text-xs text-amber-400/90 leading-relaxed">Only send Mantle-compatible tokens to this address. Tokens sent from other networks will be lost.</p>
+        <p className="text-xs text-amber-400/90 leading-relaxed">
+          {chain === "mantle"
+            ? "Only send Mantle-compatible tokens to this address. Tokens sent from other networks will be lost."
+            : "Only send Solana SPL tokens to this address. Tokens sent from other networks will be lost."}
+        </p>
       </div>
     </div>
   );
@@ -647,7 +736,16 @@ export default function WalletPage() {
           <div className="flex items-center gap-2 mb-3">
             <Wallet size={14} className="text-muted" />
             <h3 className="text-sm font-medium text-white">Smart Wallet Address</h3>
-            <Badge variant="cyan" className="ml-auto">Mantle</Badge>
+            <div className="ml-auto flex items-center gap-1.5">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-bold"
+                style={{ background: "rgba(59,158,255,0.1)", borderColor: "rgba(59,158,255,0.25)", color: "#3B9EFF" }}>
+                Mantle
+              </span>
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-bold"
+                style={{ background: "rgba(153,69,255,0.1)", borderColor: "rgba(153,69,255,0.25)", color: "#9945FF" }}>
+                Solana
+              </span>
+            </div>
           </div>
           <div className="flex items-center gap-2 bg-card2 rounded-xl px-4 py-3">
             <code className="flex-1 font-mono text-sm text-muted break-all">
@@ -674,7 +772,7 @@ export default function WalletPage() {
             </div>
             <div>
               <p className="text-sm font-medium text-white">Auto-Yield</p>
-              <p className="text-xs text-muted">Earn ~3.4% APY on idle USDC via Aave on Mantle</p>
+              <p className="text-xs text-muted">Earn ~3.4% APY on idle USDC via Aave (Mantle) / DeFi yield protocols</p>
             </div>
           </div>
           <button className="w-11 h-6 rounded-full bg-border relative transition-colors hover:bg-accent/30">

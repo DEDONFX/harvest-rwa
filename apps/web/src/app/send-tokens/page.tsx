@@ -5,7 +5,7 @@ import Link from "next/link";
 import { AlertTriangle, Check, ArrowLeft } from "lucide-react";
 import AppShell from "@/components/layout/AppShell";
 import Button from "@/components/ui/Button";
-import { MOCK_PORTFOLIO } from "@/lib/mock-data";
+import { MOCK_PORTFOLIO, MOCK_ASSETS } from "@/lib/mock-data";
 import { useAuthGuard } from "@/components/AuthGuard";
 import { cn } from "@/lib/utils";
 
@@ -22,12 +22,20 @@ export default function SendTokensPage() {
   if (blocked) return null;
 
   const holding = MOCK_PORTFOLIO[parseInt(selectedToken)];
+  const chain = MOCK_ASSETS.find((a) => a.id === holding.assetId)?.chain ?? "mantle";
+  const isMantle = chain === "mantle";
+  const chainLabel = isMantle ? "Mantle" : "Solana";
+  const addressPlaceholder = isMantle ? "0x…" : "Base58 address…";
+  const validateAddress = (addr: string) =>
+    isMantle
+      ? /^0x[0-9a-fA-F]{40}$/.test(addr.trim())
+      : /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(addr.trim());
 
   const handleVerify = () => {
     setVerifying(true);
     setTimeout(() => {
       setVerifying(false);
-      setKycVerified(/^0x[0-9a-fA-F]{40}$/.test(destination.trim()));
+      setKycVerified(validateAddress(destination));
     }, 900);
   };
 
@@ -49,7 +57,7 @@ export default function SendTokensPage() {
           <div>
             <p className="font-syne font-black text-2xl text-white mb-2">Tokens Sent</p>
             <p className="text-sm text-muted">
-              {amount} {holding.assetName} tokens transferred on Mantle Network.
+              {amount} {holding.assetName} tokens transferred on {chainLabel} Network.
             </p>
           </div>
           <Link href="/wallet">
@@ -68,15 +76,17 @@ export default function SendTokensPage() {
         </Link>
 
         <h1 className="font-syne font-black text-3xl text-white mb-1">Send Tokens Out</h1>
-        <p className="text-sm text-muted mb-6">To a verified external Mantle wallet</p>
+        <p className="text-sm text-muted mb-6">To a verified external {chainLabel} wallet</p>
 
-        {/* ERC-1400 Warning */}
+        {/* Transfer Restriction Warning */}
         <div className="flex items-start gap-3 bg-amber-400/5 border border-amber-400/20 rounded-xl px-4 py-3 mb-6">
           <AlertTriangle size={13} className="text-amber-400 mt-0.5 shrink-0" />
           <div>
-            <p className="text-xs font-bold text-amber-400 uppercase tracking-wide mb-1">ERC-1400 Transfer Restriction</p>
+            <p className="text-xs font-bold text-amber-400 uppercase tracking-wide mb-1">
+              {isMantle ? "ERC-1400 Transfer Restriction" : "SPL Token Transfer Restriction"}
+            </p>
             <p className="text-xs text-amber-400/80 leading-relaxed">
-              Tokens can only transfer to KYC-verified Mantle addresses. Yield continues distributing to tokens wherever held.
+              Tokens can only transfer to KYC-verified {chainLabel} addresses. Yield continues distributing to tokens wherever held.
             </p>
           </div>
         </div>
@@ -117,12 +127,12 @@ export default function SendTokensPage() {
 
           {/* Destination */}
           <div>
-            <label className="text-xs text-muted uppercase tracking-wide block mb-2">Destination (Mantle)</label>
+            <label className="text-xs text-muted uppercase tracking-wide block mb-2">Destination ({chainLabel})</label>
             <input
               type="text"
               value={destination}
               onChange={(e) => { setDestination(e.target.value); setKycVerified(null); }}
-              placeholder="0x..."
+              placeholder={addressPlaceholder}
               className={cn(
                 "w-full bg-card2 border rounded-btn px-4 py-3 text-sm font-mono text-offwhite focus:outline-none transition-colors",
                 kycVerified === true ? "border-green/60" : kycVerified === false ? "border-red/60" : "border-border focus:border-accent"

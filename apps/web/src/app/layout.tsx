@@ -33,6 +33,9 @@ export const metadata: Metadata = {
     description: "AI-powered Multichain Real World Asset Launchpad — Mantle + Solana",
     type: "website",
   },
+  other: {
+    "talentapp:project_verification": "cd646f60d08e233c57294f675714cfe85054c503756b12eb273c142b207944bcbdeebe1db6d2f33c74b62a9e256b34f53353b03a519d7a21f034eb1c0e113380",
+  },
 };
 
 export default function RootLayout({

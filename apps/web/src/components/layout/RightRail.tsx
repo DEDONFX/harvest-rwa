@@ -100,30 +100,20 @@ export default function RightRail() {
           </div>
         </Link>
 
-        {/* Multichain badge */}
-        <div className="rounded-xl border border-border p-3 bg-card/50">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-[11px] font-semibold text-offwhite">Multichain Infrastructure</p>
-            <div className="flex items-center gap-1 text-[10px] text-green">
-              <span className="w-1.5 h-1.5 rounded-full bg-green animate-pulse" />
+        {/* Mantle badge */}
+        <div className="rounded-xl border border-[rgba(0,200,150,0.25)] p-3 bg-[rgba(0,200,150,0.05)]">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <img src="/mantle-logo.png" alt="Mantle" width={20} height={20} style={{ width: 20, height: 20, objectFit: "contain" }} />
+              <div>
+                <p className="text-[11px] font-semibold text-offwhite">Built on Mantle</p>
+                <p className="text-[9px] text-muted">ERC-1400 · ZK Rollup · EVM</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-1 text-[10px] text-[#00C896]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#00C896] animate-pulse" />
               Live
             </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-1.5">
-            {[
-              { logo: "/mantle-logo.png",     label: "Mantle",     color: "#00C896" },
-              { logo: "/solana-logo.png",     label: "Solana",     color: "#9945FF" },
-              { logo: "/eth-logo.png",        label: "Ethereum",   color: "#627EEA" },
-              { logo: "/bnb-logo.png",        label: "BNB",        color: "#F3BA2F" },
-              { logo: "/base-logo.svg",       label: "Base",       color: "#0052FF" },
-              { logo: "/assetchain-logo.png", label: "AssetChain", color: "#2B7EF7" },
-            ].map(c => (
-              <div key={c.label} className="flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-[9px] font-bold"
-                style={{ background: `${c.color}12`, borderColor: `${c.color}30`, color: c.color }}>
-                <img src={c.logo} alt={c.label} width={9} height={9} style={{ width: 9, height: 9, objectFit: "contain" }} />
-                {c.label}
-              </div>
-            ))}
           </div>
         </div>
 

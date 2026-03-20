@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-export type ChainId = "mantle" | "solana" | "ethereum" | "bnb" | "base" | "assetchain";
+export type ChainId = "mantle";
 
 interface ChainBadgeProps {
   chain: ChainId;
@@ -9,12 +9,7 @@ interface ChainBadgeProps {
 }
 
 export const CHAIN_META: Record<ChainId, { label: string; logo: string; color: string; bg: string; border: string }> = {
-  mantle:     { label: "Mantle",     logo: "/mantle-logo.png",     color: "#00C896", bg: "rgba(0,200,150,0.1)",   border: "rgba(0,200,150,0.3)"   },
-  solana:     { label: "Solana",     logo: "/solana-logo.png",     color: "#9945FF", bg: "rgba(153,69,255,0.1)",  border: "rgba(153,69,255,0.25)" },
-  ethereum:   { label: "Ethereum",   logo: "/eth-logo.png",        color: "#627EEA", bg: "rgba(98,126,234,0.1)",  border: "rgba(98,126,234,0.25)" },
-  bnb:        { label: "BNB Chain",  logo: "/bnb-logo.png",        color: "#F3BA2F", bg: "rgba(243,186,47,0.1)",  border: "rgba(243,186,47,0.25)" },
-  base:       { label: "Base",       logo: "/base-logo.svg",       color: "#0052FF", bg: "rgba(0,82,255,0.1)",    border: "rgba(0,82,255,0.25)"   },
-  assetchain: { label: "AssetChain", logo: "/assetchain-logo.png", color: "#2B7EF7", bg: "rgba(43,126,247,0.1)",  border: "rgba(43,126,247,0.25)" },
+  mantle: { label: "Mantle", logo: "/mantle-logo.png", color: "#00C896", bg: "rgba(0,200,150,0.1)", border: "rgba(0,200,150,0.3)" },
 };
 
 export function ChainIcon({ chain, size = 14 }: { chain: ChainId; size?: number }) {
@@ -30,12 +25,8 @@ export function ChainIcon({ chain, size = 14 }: { chain: ChainId; size?: number 
   );
 }
 
-// Keep named exports for backwards compat
 export function MantleIcon({ size = 14 }: { size?: number }) {
   return <ChainIcon chain="mantle" size={size} />;
-}
-export function SolanaIcon({ size = 14 }: { size?: number }) {
-  return <ChainIcon chain="solana" size={size} />;
 }
 
 export default function ChainBadge({ chain, size = "sm", showLabel = true }: ChainBadgeProps) {

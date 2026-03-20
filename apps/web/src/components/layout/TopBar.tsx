@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, Plus, Search, Wallet, Sparkles, ChevronDown } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { Bell, Plus, Search, Wallet, Sparkles } from "lucide-react";
 import Button from "@/components/ui/Button";
 import HarvestLogo from "@/components/HarvestLogo";
 import { cn } from "@/lib/utils";
@@ -14,88 +13,6 @@ const NAV_ITEMS = [
   { label: "Feed", href: "/feed" },
 ];
 
-const SUPPORTED_CHAINS = [
-  { name: "Mantle",     tag: "ERC-1400 · ZK Rollup",  color: "#00C896", assets: 5, logo: "/mantle-logo.png"     },
-  { name: "Solana",     tag: "SPL Token · 400ms",       color: "#9945FF", assets: 3, logo: "/solana-logo.png"     },
-  { name: "Ethereum",   tag: "ERC-1400 · Mainnet",      color: "#627EEA", assets: 3, logo: "/eth-logo.png"        },
-  { name: "BNB Chain",  tag: "BEP-20 · BSC",            color: "#F3BA2F", assets: 3, logo: "/bnb-logo.png"        },
-  { name: "Base",       tag: "ERC-1400 · L2",           color: "#0052FF", assets: 3, logo: "/base-logo.svg"       },
-  { name: "AssetChain", tag: "RWA Native · XRP-EVM",    color: "#2B7EF7", assets: 3, logo: "/assetchain-logo.png" },
-];
-
-function MultichainDropdown() {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
-
-  return (
-    <div ref={ref} className="relative">
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className={cn(
-          "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-[11px] font-semibold transition-all",
-          open
-            ? "bg-card2 border-accent/30 text-offwhite"
-            : "bg-card border-border text-muted hover:text-offwhite hover:border-accent/20"
-        )}
-      >
-        {/* Stacked chain logos — first 4 */}
-        <div className="flex items-center -space-x-1.5">
-          {SUPPORTED_CHAINS.slice(0, 4).map((c, i) => (
-            <div
-              key={c.name}
-              className="w-4 h-4 rounded-full flex items-center justify-center"
-              style={{ background: `${c.color}20`, border: `1px solid ${c.color}40`, zIndex: 10 - i }}
-            >
-              <img src={c.logo} alt={c.name} width={10} height={10} style={{ width: 10, height: 10, objectFit: "contain" }} />
-            </div>
-          ))}
-        </div>
-        <span>Multichain</span>
-        <ChevronDown size={11} className={cn("transition-transform", open && "rotate-180")} />
-      </button>
-
-      {open && (
-        <div className="absolute top-full left-0 mt-2 w-[240px] bg-card border border-border rounded-xl shadow-xl overflow-hidden z-50">
-          <div className="px-3 py-2 border-b border-border">
-            <p className="text-[10px] text-muted uppercase tracking-widest font-bold">6 Active Networks</p>
-          </div>
-
-          {SUPPORTED_CHAINS.map((chain) => (
-            <div key={chain.name} className="flex items-center gap-2.5 px-3 py-2.5 hover:bg-card2 transition-colors">
-              <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
-                style={{ background: `${chain.color}18`, border: `1px solid ${chain.color}30` }}>
-                <img src={chain.logo} alt={chain.name} width={18} height={18} style={{ width: 18, height: 18, objectFit: "contain" }} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold text-offwhite">{chain.name}</p>
-                <p className="text-[10px] text-muted truncate">{chain.tag}</p>
-              </div>
-              <div className="flex flex-col items-end gap-0.5 shrink-0">
-                <div className="flex items-center gap-1 text-[9px] font-bold text-green">
-                  <span className="w-1.5 h-1.5 rounded-full bg-green animate-pulse" />
-                  Live
-                </div>
-                <p className="text-[9px] text-muted">{chain.assets} assets</p>
-              </div>
-            </div>
-          ))}
-
-          <div className="border-t border-border px-3 py-2 bg-card2/50">
-            <p className="text-[10px] text-muted text-center">More chains added every quarter</p>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
 
 interface TopBarProps {
   isLoggedIn?: boolean;
@@ -167,8 +84,12 @@ export default function TopBar({ isLoggedIn = true, onGate }: TopBarProps) {
         </div>
       </div>
 
-      {/* Multichain dropdown — always visible on all screen sizes */}
-      <MultichainDropdown />
+      {/* Mantle badge */}
+      <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-[rgba(0,200,150,0.3)] bg-[rgba(0,200,150,0.08)] text-[11px] font-semibold text-[#00C896] shrink-0">
+        <img src="/mantle-logo.png" alt="Mantle" width={13} height={13} style={{ width: 13, height: 13, objectFit: "contain" }} />
+        Mantle
+        <span className="w-1.5 h-1.5 rounded-full bg-[#00C896] animate-pulse" />
+      </div>
 
       <div className="flex-1" />
 

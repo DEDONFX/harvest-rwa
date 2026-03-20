@@ -32,86 +32,13 @@ const ASSET_TYPES = [
   { value: "pre_revenue", label: "Pre-Revenue Startup", icon: Rocket, desc: "Early-stage ventures with revenue projection" },
 ];
 
-const CHAINS = [
-  {
-    value: "mantle",
-    name: "Mantle Network",
-    tag: "EVM · ERC-1400",
-    features: ["ZK Validity Rollup", "EigenDA settlement", "$3.18B Treasury", "ERC-1400 security tokens"],
-    color: "#00C896",
-    bg: "rgba(0,200,150,0.08)",
-    border: "rgba(0,200,150,0.25)",
-    logo: "/mantle-logo.png",
-  },
-  {
-    value: "solana",
-    name: "Solana",
-    tag: "SPL Tokens",
-    features: ["400ms finality", "100M+ wallets", "SPL token standard", "Metaplex metadata"],
-    color: "#9945FF",
-    bg: "rgba(153,69,255,0.08)",
-    border: "rgba(153,69,255,0.25)",
-    logo: "/solana-logo.png",
-  },
-  {
-    value: "ethereum",
-    name: "Ethereum",
-    tag: "EVM · ERC-1400",
-    features: ["Most liquid chain", "Institutional trust", "ERC-1400 security tokens", "DeFi composability"],
-    color: "#627EEA",
-    bg: "rgba(98,126,234,0.08)",
-    border: "rgba(98,126,234,0.25)",
-    logo: "/eth-logo.png",
-  },
-  {
-    value: "bnb",
-    name: "BNB Chain",
-    tag: "EVM · BEP-20",
-    features: ["Low gas fees", "3 sec finality", "BEP-20 token standard", "Binance ecosystem"],
-    color: "#F3BA2F",
-    bg: "rgba(243,186,47,0.08)",
-    border: "rgba(243,186,47,0.25)",
-    logo: "/bnb-logo.png",
-  },
-  {
-    value: "base",
-    name: "Base",
-    tag: "EVM · L2 · Coinbase",
-    features: ["Coinbase-backed L2", "Ultra-low fees", "ERC-1400 support", "Onramp via Coinbase"],
-    color: "#0052FF",
-    bg: "rgba(0,82,255,0.08)",
-    border: "rgba(0,82,255,0.25)",
-    logo: "/base-logo.svg",
-  },
-  {
-    value: "assetchain",
-    name: "AssetChain",
-    tag: "RWA Native · XRP-EVM",
-    features: ["Built for RWAs", "XRP-EVM sidechain", "Institutional grade", "Native compliance layer"],
-    color: "#2B7EF7",
-    bg: "rgba(43,126,247,0.08)",
-    border: "rgba(43,126,247,0.25)",
-    logo: "/assetchain-logo.png",
-  },
-];
-
-const CHAIN_INFO: Record<string, string> = {
-  mantle: "ERC-1400 security tokens on Mantle Network. Transfer restrictions enforced at contract level — only KYC-verified addresses can hold tokens. Gas fees absorbed by Harvest.rwa.",
-  solana: "SPL tokens with Metaplex metadata on Solana. 400ms finality and access to Solana's 100M+ wallet ecosystem. Compressed NFT support for large holder counts.",
-  ethereum: "ERC-1400 security tokens on Ethereum Mainnet. Maximum institutional credibility and DeFi composability. Best for large-cap assets targeting institutional investors.",
-  bnb: "BEP-20 tokens on BNB Chain. Ultra-low gas fees and 3-second finality. Access to Binance's massive user base. Great for retail-focused assets.",
-  base: "ERC-1400 tokens on Base (Coinbase L2). Seamless fiat onramp via Coinbase for US investors. Near-zero fees with Ethereum-level security.",
-  assetchain: "Native RWA tokens on AssetChain — a blockchain purpose-built for real-world assets. Built-in compliance layer and XRP-EVM sidechain architecture.",
-};
-
 type Step = 0 | 1 | 2 | 3 | 4 | 5;
 
-const STEP_LABELS = ["Pipeline", "Asset Info", "Financials", "Chain", "Documents", "Review & Pay"];
+const STEP_LABELS = ["Pipeline", "Asset Info", "Financials", "Network", "Documents", "Review & Pay"];
 
 export default function ListAssetPage() {
   const [step, setStep] = useState<Step>(0);
   const [assetType, setAssetType] = useState("");
-  const [selectedChain, setSelectedChain] = useState("");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
@@ -155,7 +82,7 @@ export default function ListAssetPage() {
 
   // ── Submitted ─────────────────────────────────────────────────────────────
   if (submitted) {
-    const chain = CHAINS.find((c) => c.value === selectedChain);
+    const chain = { name: "Mantle Network", color: "#00C896", bg: "rgba(0,200,150,0.08)", border: "rgba(0,200,150,0.25)", logo: "/mantle-logo.png" };
     const allDone = pipelineStage >= PIPELINE_STAGES.length - 1;
 
     return (
@@ -622,82 +549,47 @@ export default function ListAssetPage() {
           </div>
         )}
 
-        {/* ── Step 3: Chain Selection ───────────────────────────────────── */}
+        {/* ── Step 3: Network ───────────────────────────────────────────── */}
         {step === 3 && (
           <div className="space-y-6">
             <div>
-              <p className="text-sm font-medium text-offwhite mb-1">Choose your blockchain</p>
+              <p className="text-sm font-medium text-offwhite mb-1">Blockchain Network</p>
               <p className="text-xs text-muted mb-5">
-                Your asset tokens will be deployed on the chain you select. This cannot be changed after submission.
+                Harvest.rwa deploys all assets on Mantle Network as ERC-1400 security tokens.
               </p>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {CHAINS.map((chain) => (
-                  <button
-                    key={chain.value}
-                    onClick={() => setSelectedChain(chain.value)}
-                    className={cn(
-                      "text-left p-5 rounded-2xl border-2 transition-all relative overflow-hidden",
-                      selectedChain === chain.value
-                        ? "bg-card"
-                        : "bg-card border-border hover:border-white/10"
-                    )}
-                    style={selectedChain === chain.value ? {
-                      borderColor: chain.color,
-                      boxShadow: `0 0 24px ${chain.bg}`,
-                    } : {}}
-                  >
-                    {/* Selected indicator */}
-                    {selectedChain === chain.value && (
-                      <div className="absolute top-3 right-3">
-                        <CheckCircle size={16} style={{ color: chain.color }} />
-                      </div>
-                    )}
-
-                    {/* Logo */}
-                    <div className="mb-3"><img src={chain.logo} alt={chain.name} width={32} height={32} style={{width:32,height:32,objectFit:"contain"}} /></div>
-
-                    {/* Name + tag */}
-                    <p className="text-sm font-bold text-white mb-0.5">{chain.name}</p>
-                    <p className="text-[10px] font-mono mb-3" style={{ color: chain.color }}>{chain.tag}</p>
-
-                    {/* Features */}
-                    <div className="space-y-1.5">
-                      {chain.features.map((f) => (
-                        <div key={f} className="flex items-center gap-2 text-[11px] text-muted">
-                          <span className="w-1 h-1 rounded-full shrink-0" style={{ background: chain.color }} />
-                          {f}
-                        </div>
-                      ))}
+              <div className="p-5 rounded-2xl border-2 bg-card"
+                style={{ borderColor: "#00C896", boxShadow: "0 0 24px rgba(0,200,150,0.08)" }}>
+                <div className="flex items-center gap-3 mb-4">
+                  <img src="/mantle-logo.png" alt="Mantle" width={36} height={36} style={{width:36,height:36,objectFit:"contain"}} />
+                  <div>
+                    <p className="text-sm font-bold text-white">Mantle Network</p>
+                    <p className="text-[10px] font-mono text-[#00C896]">EVM · ERC-1400 Security Tokens</p>
+                  </div>
+                  <CheckCircle size={16} className="ml-auto text-[#00C896]" />
+                </div>
+                <div className="grid grid-cols-2 gap-y-1.5">
+                  {["ZK Validity Rollup", "EigenDA settlement", "$3.18B Treasury", "ERC-1400 security tokens"].map((f) => (
+                    <div key={f} className="flex items-center gap-2 text-[11px] text-muted">
+                      <span className="w-1 h-1 rounded-full bg-[#00C896] shrink-0" />
+                      {f}
                     </div>
-                  </button>
-                ))}
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-2xl border p-4 flex items-start gap-3 mt-4"
+                style={{ background: "rgba(0,200,150,0.08)", borderColor: "rgba(0,200,150,0.25)" }}>
+                <Info size={14} className="mt-0.5 shrink-0 text-[#00C896]" />
+                <p className="text-xs text-muted leading-relaxed">
+                  ERC-1400 security tokens on Mantle Network. Transfer restrictions enforced at contract level — only KYC-verified addresses can hold tokens. Gas fees absorbed by Harvest.rwa.
+                </p>
               </div>
             </div>
 
-            {/* Info box */}
-            {selectedChain && (
-              <div
-                className="rounded-2xl border p-4 flex items-start gap-3 transition-all"
-                style={{
-                  background: CHAINS.find((c) => c.value === selectedChain)?.bg,
-                  borderColor: CHAINS.find((c) => c.value === selectedChain)?.border,
-                }}
-              >
-                <Info size={14} className="mt-0.5 shrink-0" style={{ color: CHAINS.find((c) => c.value === selectedChain)?.color }} />
-                <p className="text-xs text-muted leading-relaxed">
-                  {CHAIN_INFO[selectedChain]}
-                </p>
-              </div>
-            )}
-
             <div className="flex gap-3">
               <Button variant="outline" size="lg" onClick={() => setStep(2)}>← Back</Button>
-              <Button
-                variant="primary" size="lg" className="flex-1"
-                disabled={!selectedChain}
-                onClick={() => setStep(4)}
-              >
+              <Button variant="primary" size="lg" className="flex-1" onClick={() => setStep(4)}>
                 Continue →
               </Button>
             </div>
@@ -802,9 +694,9 @@ export default function ListAssetPage() {
                   { label: "Annual yield", value: `${form.annualYield}%` },
                   { label: "Min investment", value: `$${form.minInvestment}` },
                 ]},
-                { section: "Chain", rows: [
-                  { label: "Blockchain", value: CHAINS.find((c) => c.value === selectedChain)?.name ?? selectedChain },
-                  { label: "Token standard", value: selectedChain === "mantle" ? "ERC-1400 (Security Token)" : "SPL Token (Metaplex)" },
+                { section: "Network", rows: [
+                  { label: "Blockchain", value: "Mantle Network" },
+                  { label: "Token standard", value: "ERC-1400 (Security Token)" },
                 ]},
                 { section: "Originator", rows: [
                   { label: "Name", value: form.originatorName },
@@ -814,16 +706,13 @@ export default function ListAssetPage() {
                 <div key={section} className="p-4">
                   <div className="flex items-center justify-between mb-3">
                     <p className="text-xs text-muted uppercase tracking-wide">{section}</p>
-                    {section === "Chain" && selectedChain && (() => {
-                      const c = CHAINS.find((ch) => ch.value === selectedChain)!;
-                      return (
-                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[10px] font-bold"
-                          style={{ background: c.bg, borderColor: c.border, color: c.color }}>
-                          <img src={c.logo} alt={c.name} width={12} height={12} style={{width:12,height:12,objectFit:"contain"}} />
-                          {c.name}
-                        </span>
-                      );
-                    })()}
+                    {section === "Network" && (
+                      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[10px] font-bold"
+                        style={{ background: "rgba(0,200,150,0.08)", borderColor: "rgba(0,200,150,0.25)", color: "#00C896" }}>
+                        <img src="/mantle-logo.png" alt="Mantle" width={12} height={12} style={{width:12,height:12,objectFit:"contain"}} />
+                        Mantle
+                      </span>
+                    )}
                   </div>
                   <div className="space-y-2">
                     {rows.map(({ label, value }) => (

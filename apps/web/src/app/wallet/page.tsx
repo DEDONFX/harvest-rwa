@@ -31,48 +31,14 @@ function CountdownTimer({ minutes }: { minutes: number }) {
   );
 }
 
-type ChainId = "mantle" | "solana" | "ethereum" | "bnb" | "base" | "assetchain";
-
-// EVM chains share the same address format and private key (same seed derivation path)
-const EVM_CHAINS: ChainId[] = ["mantle", "ethereum", "bnb", "base", "assetchain"];
+type ChainId = "mantle";
 
 const CHAIN_CONFIG: Record<ChainId, {
   label: string; logo: string; placeholder: string; color: string; bg: string; border: string;
   validate: (a: string) => boolean; errorMsg: string; warning: string;
 }> = {
-  mantle:     { label: "Mantle",     logo: "/mantle-logo.png",     placeholder: "0x…",           color: "#00C896", bg: "rgba(0,200,150,0.12)",   border: "rgba(0,200,150,0.35)",   validate: (a) => /^0x[0-9a-fA-F]{40}$/.test(a.trim()), errorMsg: "Must be a valid EVM address (0x…)", warning: "Transfers on Mantle are irreversible. Double-check the address." },
-  ethereum:   { label: "Ethereum",   logo: "/eth-logo.png",        placeholder: "0x…",           color: "#627EEA", bg: "rgba(98,126,234,0.12)",  border: "rgba(98,126,234,0.35)",  validate: (a) => /^0x[0-9a-fA-F]{40}$/.test(a.trim()), errorMsg: "Must be a valid EVM address (0x…)", warning: "Transfers on Ethereum are irreversible. Double-check the address." },
-  bnb:        { label: "BNB Chain",  logo: "/bnb-logo.png",        placeholder: "0x…",           color: "#F3BA2F", bg: "rgba(243,186,47,0.12)",  border: "rgba(243,186,47,0.35)",  validate: (a) => /^0x[0-9a-fA-F]{40}$/.test(a.trim()), errorMsg: "Must be a valid EVM address (0x…)", warning: "Transfers on BNB Chain are irreversible. Double-check the address." },
-  base:       { label: "Base",       logo: "/base-logo.svg",       placeholder: "0x…",           color: "#0052FF", bg: "rgba(0,82,255,0.12)",    border: "rgba(0,82,255,0.35)",    validate: (a) => /^0x[0-9a-fA-F]{40}$/.test(a.trim()), errorMsg: "Must be a valid EVM address (0x…)", warning: "Transfers on Base are irreversible. Double-check the address." },
-  assetchain: { label: "AssetChain", logo: "/assetchain-logo.png", placeholder: "0x…",           color: "#2B7EF7", bg: "rgba(43,126,247,0.12)",  border: "rgba(43,126,247,0.35)",  validate: (a) => /^0x[0-9a-fA-F]{40}$/.test(a.trim()), errorMsg: "Must be a valid EVM address (0x…)", warning: "Transfers on AssetChain are irreversible. Double-check the address." },
-  solana:     { label: "Solana",     logo: "/solana-logo.png",     placeholder: "Base58 addr…",  color: "#9945FF", bg: "rgba(153,69,255,0.12)",  border: "rgba(153,69,255,0.35)",  validate: (a) => /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(a.trim()), errorMsg: "Must be a valid Solana base58 address", warning: "Transfers on Solana are irreversible. Solana uses a different address format — double-check." },
+  mantle: { label: "Mantle", logo: "/mantle-logo.png", placeholder: "0x…", color: "#00C896", bg: "rgba(0,200,150,0.12)", border: "rgba(0,200,150,0.35)", validate: (a) => /^0x[0-9a-fA-F]{40}$/.test(a.trim()), errorMsg: "Must be a valid EVM address (0x…)", warning: "Transfers on Mantle are irreversible. Double-check the address." },
 };
-
-function InlineChainSelector({ value, onChange }: { value: ChainId; onChange: (c: ChainId) => void }) {
-  return (
-    <div className="flex flex-wrap gap-1.5">
-      {(Object.keys(CHAIN_CONFIG) as ChainId[]).map((c) => {
-        const cfg = CHAIN_CONFIG[c];
-        const active = value === c;
-        return (
-          <button
-            key={c}
-            type="button"
-            onClick={() => onChange(c)}
-            className={cn(
-              "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-semibold transition-all",
-              active ? "" : "bg-card border-border text-muted hover:border-accent/30"
-            )}
-            style={active ? { background: cfg.bg, borderColor: cfg.border, color: cfg.color } : undefined}
-          >
-            <img src={cfg.logo} alt={cfg.label} width={12} height={12} style={{ width: 12, height: 12, objectFit: "contain" }} />
-            {cfg.label}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
 
 function SendPanel({ onClose }: { onClose: () => void }) {
   const [step, setStep] = useState<1 | 2 | 3>(1);
@@ -136,8 +102,11 @@ function SendPanel({ onClose }: { onClose: () => void }) {
       {step === 1 && (
         <div className="space-y-4">
           <div>
-            <p className="text-xs text-muted uppercase tracking-wide mb-2">Destination Chain</p>
-            <InlineChainSelector value={chain} onChange={(c) => { setChain(c); setRecipient(""); }} />
+            <p className="text-xs text-muted uppercase tracking-wide mb-2">Destination Network</p>
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-[rgba(0,200,150,0.3)] bg-[rgba(0,200,150,0.08)] w-fit">
+              <img src="/mantle-logo.png" alt="Mantle" width={14} height={14} style={{ width: 14, height: 14, objectFit: "contain" }} />
+              <span className="text-xs font-semibold text-[#00C896]">Mantle</span>
+            </div>
           </div>
           <div>
             <p className="text-xs text-muted uppercase tracking-wide mb-2">Recipient Wallet Address</p>
@@ -553,14 +522,10 @@ function P2PPanel({ type, onClose }: { type: PanelType; onClose: () => void }) {
   );
 }
 
-const MOCK_SOLANA_ADDRESS = "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU";
-
 function ReceivePanel({ address, onClose }: { address: string; onClose: () => void }) {
-  const [chain, setChain] = useState<ChainId>("mantle");
   const [copied, setCopied] = useState(false);
-  const displayAddress = chain === "solana" ? MOCK_SOLANA_ADDRESS : address;
   const copy = () => {
-    navigator.clipboard.writeText(displayAddress);
+    navigator.clipboard.writeText(address);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -570,20 +535,17 @@ function ReceivePanel({ address, onClose }: { address: string; onClose: () => vo
         <h3 className="font-syne font-bold text-white">Receive / Import Tokens</h3>
         <button onClick={onClose} className="text-muted hover:text-offwhite text-xl leading-none">&times;</button>
       </div>
-      <div>
-        <p className="text-xs text-muted uppercase tracking-wide mb-2">Select Network</p>
-        <InlineChainSelector value={chain} onChange={(c) => { setChain(c); setCopied(false); }} />
+      <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-[rgba(0,200,150,0.3)] bg-[rgba(0,200,150,0.08)] w-fit">
+        <img src="/mantle-logo.png" alt="Mantle" width={14} height={14} style={{ width: 14, height: 14, objectFit: "contain" }} />
+        <span className="text-xs font-semibold text-[#00C896]">Mantle Network</span>
       </div>
       <p className="text-sm text-muted leading-relaxed">
-        Send tokens to your Harvest.rwa smart wallet on {CHAIN_CONFIG[chain].label}.{" "}
-        {chain === "solana" ? "Any SPL token" : "Any ERC-20 / ERC-1400 token"} sent to this address will appear in your holdings.
+        Send tokens to your Harvest.rwa smart wallet on Mantle. Any ERC-20 / ERC-1400 token sent to this address will appear in your holdings.
       </p>
       <div>
-        <p className="text-xs text-muted uppercase tracking-wide mb-2">
-          Your Wallet Address ({CHAIN_CONFIG[chain].label}{chain !== "solana" ? " · EVM" : ""})
-        </p>
+        <p className="text-xs text-muted uppercase tracking-wide mb-2">Your Wallet Address (Mantle · EVM)</p>
         <div className="flex items-center gap-2 bg-card2 border border-border rounded-xl px-4 py-3">
-          <code className="flex-1 font-mono text-sm text-offwhite break-all">{displayAddress}</code>
+          <code className="flex-1 font-mono text-sm text-offwhite break-all">{address}</code>
           <button onClick={copy} className="shrink-0 text-muted hover:text-offwhite transition-colors">
             {copied ? <Check size={14} className="text-green" /> : <Copy size={14} />}
           </button>
@@ -593,9 +555,7 @@ function ReceivePanel({ address, onClose }: { address: string; onClose: () => vo
       <div className="flex items-start gap-2 bg-amber-400/5 border border-amber-400/20 rounded-xl px-4 py-3">
         <AlertCircle size={12} className="text-amber-400 mt-0.5 shrink-0" />
         <p className="text-xs text-amber-400/90 leading-relaxed">
-          {chain === "solana"
-            ? "Only send Solana SPL tokens to this address. Tokens from other networks will be lost."
-            : `Only send ${CHAIN_CONFIG[chain].label}-compatible tokens to this address. This is an EVM address — compatible with Mantle, Ethereum, BNB, Base, and AssetChain.`}
+          Only send Mantle-compatible ERC-20 / ERC-1400 tokens to this address. Tokens from other networks may be lost.
         </p>
       </div>
     </div>
@@ -606,27 +566,21 @@ const MOCK_SEED_WORDS = [
   "galaxy", "marble", "harvest", "orange", "river", "summit",
   "velvet", "anchor", "temple", "frozen", "canvas", "bridge",
 ];
-// EVM 256-bit private key (64 hex chars prefixed with 0x)
 const MOCK_PRIVKEY_MANTLE = "0x4a7f3d8c9b2a1e4f6d0c5b8a9e3f2d1c7b4e8a9f3d2c1b7e4f6d0c5b8a9e3f2d";
-// Solana 64-byte keypair encoded as base58 (~88 chars) — different key from EVM
-const MOCK_PRIVKEY_SOLANA = "5KjBzP9mNxA3TqGsHcYvWrLdFuE7kQe2nVtX8oDw4MiCRb6yJpZ1hUfgS0lKm9TzaNxB4vWrLdFu3kQeP2n";
 
 export default function WalletPage() {
   const blocked = useAuthGuard("/wallet");
   const user = MOCK_USER;
   const [copied, setCopied] = useState(false);
   const [activePanel, setActivePanel] = useState<PanelType>(null);
-  const [walletChain, setWalletChain] = useState<ChainId>("mantle");
   const [showSeed, setShowSeed] = useState(false);
-  const [showEvmKey, setShowEvmKey] = useState(false);
-  const [showSolKey, setShowSolKey] = useState(false);
-  const [secCopied, setSecCopied] = useState<"seed" | "key" | "sol" | null>(null);
+  const [showKey, setShowKey] = useState(false);
+  const [secCopied, setSecCopied] = useState<"seed" | "key" | null>(null);
 
   if (blocked) return null;
 
   const copyAddress = () => {
-    const addr = walletChain === "solana" ? MOCK_SOLANA_ADDRESS : user.walletAddress;
-    navigator.clipboard.writeText(addr);
+    navigator.clipboard.writeText(user.walletAddress);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -720,42 +674,20 @@ export default function WalletPage() {
           </div>
         )}
 
-        {/* Smart wallet addresses — per network */}
+        {/* Smart wallet address — Mantle */}
         <div className="bg-card border border-border rounded-card p-5">
           <div className="flex items-center gap-2 mb-4">
             <Wallet size={14} className="text-muted" />
-            <h3 className="text-sm font-medium text-white">Wallet Addresses</h3>
+            <h3 className="text-sm font-medium text-white">Wallet Address</h3>
+            <div className="ml-auto flex items-center gap-1.5 px-2 py-1 rounded-lg border border-[rgba(0,200,150,0.3)] bg-[rgba(0,200,150,0.08)]">
+              <img src="/mantle-logo.png" alt="Mantle" width={11} height={11} style={{ width: 11, height: 11, objectFit: "contain" }} />
+              <span className="text-[10px] font-semibold text-[#00C896]">Mantle · EVM</span>
+            </div>
           </div>
 
-          {/* Network selector — all 6 chains */}
-          <div className="flex flex-wrap gap-1.5 mb-4">
-            {(Object.keys(CHAIN_CONFIG) as ChainId[]).map((id) => {
-              const cfg = CHAIN_CONFIG[id];
-              const active = walletChain === id;
-              return (
-                <button
-                  key={id}
-                  onClick={() => { setWalletChain(id); setCopied(false); }}
-                  className={cn(
-                    "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-semibold transition-all",
-                    active ? "" : "bg-card border-border text-muted hover:border-accent/30"
-                  )}
-                  style={active ? { background: cfg.bg, borderColor: cfg.border, color: cfg.color } : undefined}
-                >
-                  <img src={cfg.logo} alt={cfg.label} width={12} height={12} style={{ width: 12, height: 12, objectFit: "contain" }} />
-                  {cfg.label}
-                </button>
-              );
-            })}
-          </div>
-
-          <p className="text-xs text-muted mb-2 uppercase tracking-wide">
-            Your {EVM_CHAINS.includes(walletChain) ? `${CHAIN_CONFIG[walletChain].label} (EVM)` : "Solana"} Address
-          </p>
+          <p className="text-xs text-muted mb-2 uppercase tracking-wide">Your Mantle Address</p>
           <div className="flex items-center gap-2 bg-card2 rounded-xl px-4 py-3">
-            <code className="flex-1 font-mono text-sm text-offwhite break-all">
-              {walletChain === "solana" ? MOCK_SOLANA_ADDRESS : user.walletAddress}
-            </code>
+            <code className="flex-1 font-mono text-sm text-offwhite break-all">{user.walletAddress}</code>
             <button onClick={copyAddress} className="shrink-0 text-muted hover:text-offwhite transition-colors">
               {copied ? <Check size={14} className="text-green" /> : <Copy size={14} />}
             </button>
@@ -845,35 +777,31 @@ export default function WalletPage() {
               )}
             </div>
 
-            {/* EVM private key — works for Mantle, Ethereum, BNB, Base, AssetChain */}
+            {/* Private key */}
             <div className="bg-card2 rounded-xl p-4">
               <div className="flex items-center justify-between mb-1">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-0.5">
-                    <p className="text-sm font-medium text-offwhite">EVM Private Key</p>
-                    <div className="flex items-center gap-1">
-                      {([["mantle","/mantle-logo.png"],["ethereum","/eth-logo.png"],["bnb","/bnb-logo.png"],["base","/base-logo.svg"],["assetchain","/assetchain-logo.png"]] as [string,string][]).map(([id,logo]) => (
-                        <img key={id} src={logo} alt={id} width={12} height={12} style={{width:12,height:12,objectFit:"contain"}} />
-                      ))}
-                    </div>
+                    <p className="text-sm font-medium text-offwhite">Private Key</p>
+                    <img src="/mantle-logo.png" alt="Mantle" width={12} height={12} style={{width:12,height:12,objectFit:"contain"}} />
                   </div>
-                  <p className="text-xs text-muted">Works for all 5 EVM chains · 256-bit hex key</p>
+                  <p className="text-xs text-muted">Mantle EVM · 256-bit hex key</p>
                 </div>
                 <button
-                  onClick={() => setShowEvmKey(!showEvmKey)}
+                  onClick={() => setShowKey(!showKey)}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-card text-xs text-muted hover:text-offwhite hover:border-accent/30 transition-all shrink-0 ml-3"
                 >
-                  {showEvmKey ? <EyeOff size={11} /> : <Eye size={11} />}
-                  {showEvmKey ? "Hide" : "Reveal"}
+                  {showKey ? <EyeOff size={11} /> : <Eye size={11} />}
+                  {showKey ? "Hide" : "Reveal"}
                 </button>
               </div>
 
-              {showEvmKey && (
+              {showKey && (
                 <div className="mt-3 space-y-3 animate-fade-in">
                   <div className="flex items-start gap-2 bg-red/5 border border-red/20 rounded-xl px-3 py-2.5">
                     <AlertCircle size={11} className="text-red mt-0.5 shrink-0" />
                     <p className="text-[11px] text-red/90 leading-relaxed">
-                      Full control of all your EVM wallets (Mantle, Ethereum, BNB, Base, AssetChain). Never share or paste on any website.
+                      Full control of your Mantle wallet. Never share or paste on any website.
                     </p>
                   </div>
                   <div className="flex items-center gap-2 bg-card border border-border rounded-xl px-4 py-3">
@@ -883,46 +811,6 @@ export default function WalletPage() {
                       className="shrink-0 text-muted hover:text-offwhite transition-colors"
                     >
                       {secCopied === "key" ? <Check size={13} className="text-green" /> : <Copy size={13} />}
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Solana private key — completely different key from EVM */}
-            <div className="bg-card2 rounded-xl p-4">
-              <div className="flex items-center justify-between mb-1">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <p className="text-sm font-medium text-offwhite">Solana Private Key</p>
-                    <img src="/solana-logo.png" alt="Solana" width={12} height={12} style={{width:12,height:12,objectFit:"contain"}} />
-                  </div>
-                  <p className="text-xs text-muted">Solana only · 64-byte base58 keypair · Different from EVM key</p>
-                </div>
-                <button
-                  onClick={() => setShowSolKey(!showSolKey)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-card text-xs text-muted hover:text-offwhite hover:border-accent/30 transition-all shrink-0 ml-3"
-                >
-                  {showSolKey ? <EyeOff size={11} /> : <Eye size={11} />}
-                  {showSolKey ? "Hide" : "Reveal"}
-                </button>
-              </div>
-
-              {showSolKey && (
-                <div className="mt-3 space-y-3 animate-fade-in">
-                  <div className="flex items-start gap-2 bg-red/5 border border-red/20 rounded-xl px-3 py-2.5">
-                    <AlertCircle size={11} className="text-red mt-0.5 shrink-0" />
-                    <p className="text-[11px] text-red/90 leading-relaxed">
-                      Full control of your Solana wallet. This is a completely separate key from your EVM key — Solana uses Ed25519 cryptography. Never share or paste on any website.
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2 bg-card border border-border rounded-xl px-4 py-3">
-                    <code className="flex-1 font-mono text-xs text-offwhite break-all">{MOCK_PRIVKEY_SOLANA}</code>
-                    <button
-                      onClick={() => { navigator.clipboard.writeText(MOCK_PRIVKEY_SOLANA); setSecCopied("sol"); setTimeout(() => setSecCopied(null), 2000); }}
-                      className="shrink-0 text-muted hover:text-offwhite transition-colors"
-                    >
-                      {secCopied === "sol" ? <Check size={13} className="text-green" /> : <Copy size={13} />}
                     </button>
                   </div>
                 </div>

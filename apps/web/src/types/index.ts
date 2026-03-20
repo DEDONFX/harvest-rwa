@@ -20,7 +20,7 @@ export interface Asset {
   id: string;
   name: string;
   symbol: string;
-  chain: "mantle" | "solana" | "ethereum" | "bnb" | "base" | "assetchain";
+  chain: "mantle";
   category: AssetCategory;
   location: string;
   country: string;

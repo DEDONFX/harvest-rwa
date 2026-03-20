@@ -437,7 +437,7 @@ const ALL_ASSETS: Asset[] = [
       suitableFor: ["conservative", "balanced"],
     },
   },
-  // ── New assets: Ethereum, BNB, Base, AssetChain ──────────────────────────
+  // ── Additional assets ─────────────────────────────────────────────────────
   {
     id: "asset-009",
     name: "Sydney Harbour Tower",
@@ -566,7 +566,7 @@ const ALL_ASSETS: Asset[] = [
     country: "USA",
     flag: "US",
     image: "https://images.unsplash.com/photo-1473448912268-2022ce9509d8?w=600&h=300&fit=crop&q=80",
-    description: "Verified carbon credit portfolio sourced from RGGI-certified reforestation projects across the US Northeast. Tokenised on Ethereum for transparent provenance.",
+    description: "Verified carbon credit portfolio sourced from RGGI-certified reforestation projects across the US Northeast. Tokenised on Mantle for transparent provenance.",
     annualYieldPercent: 14.3,
     riskScore: 5,
     status: "upcoming",
@@ -911,28 +911,28 @@ const ALL_ASSETS: Asset[] = [
   },
 ];
 
-// Shuffled: mantle, solana, ethereum, bnb, base, assetchain interleaved
+// Display order — shuffled for variety
 const SHUFFLED_ORDER = [
-  "asset-001", // mantle   – Lisbon
-  "asset-003", // solana   – Lagos Invoice
-  "asset-009", // ethereum – Sydney Harbour
-  "asset-010", // bnb      – São Paulo Tech
-  "asset-011", // base     – Singapore Marina
-  "asset-013", // assetchain – Tokyo Data
-  "asset-002", // mantle   – Brazil Solar
-  "asset-005", // solana   – Nairobi Student
-  "asset-012", // ethereum – NY Carbon Credits
-  "asset-016", // bnb      – Miami Residential
-  "asset-014", // base     – Paris Art Fund
-  "asset-015", // assetchain – Lagos Port Energy
-  "asset-004", // mantle   – Dubai Logistics
-  "asset-017", // ethereum – Accra Gold
-  "asset-020", // bnb      – Bogota Transit
-  "asset-018", // base     – Barcelona Hotel
-  "asset-019", // assetchain – Abu Dhabi Bond
-  "asset-007", // mantle   – Casablanca Tower
-  "asset-006", // solana   – Manila Data Centre
-  "asset-008", // mantle   – UK Credit Fund
+  "asset-001", // Lisbon Commercial Centre
+  "asset-003", // Lagos Invoice Finance
+  "asset-009", // Sydney Harbour Tower
+  "asset-010", // São Paulo Tech Campus
+  "asset-011", // Singapore Marina
+  "asset-013", // Tokyo Data Infrastructure
+  "asset-002", // Brazil Solar
+  "asset-005", // Nairobi Student Housing
+  "asset-012", // NY Carbon Credits
+  "asset-016", // Miami Residential
+  "asset-014", // Paris Art Fund
+  "asset-015", // Lagos Port Energy
+  "asset-004", // Dubai Logistics
+  "asset-017", // Accra Gold Royalty
+  "asset-020", // Bogota Transit
+  "asset-018", // Barcelona Hotel
+  "asset-019", // Abu Dhabi Green Bond
+  "asset-007", // Casablanca Tower
+  "asset-006", // Manila Data Centre
+  "asset-008", // UK Credit Fund
 ];
 
 export const MOCK_ASSETS: Asset[] = SHUFFLED_ORDER.map(
